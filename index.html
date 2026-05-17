@@ -13,9 +13,9 @@
 <meta name="mobile-web-app-capable"                  content="yes">
 <meta name="theme-color"                             content="#00c8ff">
 <meta name="description" content="Income Tax Dept Digital Evidence Unit — HDD Declaration System">
-<link rel="manifest"          href="manifest.json">
-<link rel="apple-touch-icon"  sizes="192x192" href="icons/icon-192.png">
-<link rel="icon"              type="image/png" href="icons/icon-96.png">
+<link rel="manifest"          href="./manifest.json">
+<link rel="apple-touch-icon"  sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon"              type="image/png" href="./icons/icon-96.png">
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -217,7 +217,7 @@ select option{background:var(--card);}
 <!-- Install Banner -->
 <div id="installBanner">
   <div style="display:flex;align-items:center;gap:10px;">
-    <img src="icons/icon-72.png" style="width:38px;height:38px;border-radius:9px;">
+    <img src="./icons/icon-72.png" style="width:38px;height:38px;border-radius:9px;">
     <div>
       <div style="font-weight:700;font-size:.9rem;color:#e0e8ff;">Install HDD Manager</div>
       <div style="font-family:'Share Tech Mono',monospace;font-size:.67rem;color:#5a6a99;">Add to home screen</div>
@@ -1075,7 +1075,7 @@ function showToast(msg,type){
 // ── PWA ──────────────────────────────────────────────────
 var deferredPrompt;
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(function(){});
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
 }
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault(); deferredPrompt=e;
