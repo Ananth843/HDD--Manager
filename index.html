@@ -19,6 +19,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -513,6 +514,19 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
+// ── EMAILJS CONFIG ────────────────────────────────────
+// Sign up free at emailjs.com → get these 3 values
+var EMAILJS_SERVICE_ID  = 'service_10btpnn';
+var EMAILJS_TEMPLATE_ID = 'template_ym7kscl';
+var EMAILJS_PUBLIC_KEY  = 'j9zfKbh-Rtse7dGom';
+
+// ── APPS SCRIPT BACKUP URL ───────────────────────────
+// Paste your Apps Script Web App URL here as backup
+var APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
+
+// Init EmailJS
+emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
 // ── ADMIN LIST ───────────────────────────────────────────
 var ADMINS = [
   "ananthajith.pcvita@gmail.com",
@@ -718,27 +732,100 @@ function sendEmail() {
   var to      = document.getElementById('emailTo').value.trim();
   var subject = document.getElementById('emailSubject').value.trim();
   var body    = document.getElementById('emailBody').value.trim();
+  var declId  = activeEmailDeclId;
 
-  if (!to) { showToast('Enter recipient email.','error'); return; }
+  if (!to) { showToast('Enter recipient email.', 'error'); return; }
 
-  // Open default email client
-  var mailtoLink = 'mailto:' + to +
-    '?subject=' + encodeURIComponent(subject) +
-    '&body='    + encodeURIComponent(body);
-  window.open(mailtoLink, '_blank');
+  var sendBtn = document.querySelector('#emailModal .btn-primary');
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<span class="spinner"></span>Sending...';
 
-  // Update declaration status to sent
-  if (activeEmailDeclId) {
-    db.collection('declarations').doc(activeEmailDeclId).update({
-      status    : 'sent',
-      sentAt    : firebase.firestore.FieldValue.serverTimestamp(),
-      sentTo    : to
-    }).then(function(){
-      showToast('Status updated to Sent!','success');
-      loadDeclarations();
+  // Get declaration data for formatted email
+  db.collection('declarations').doc(declId).get().then(function(doc) {
+    var d = doc.data();
+
+    // Build formatted HTML email
+    var emailParams = {
+      to_email     : to,
+      to_name      : d.employeeName || to.split('@')[0],
+      subject      : subject,
+      decl_id      : d.declId,
+      quantity     : d.quantity,
+      size         : d.size || 'N/A',
+      serials      : (d.serials||[]).join('
+'),
+      transfer_date: d.transferDate || 'N/A',
+      admin_note   : d.adminNote || 'None',
+      issued_by    : d.issuedBy,
+      decl_link    : d.declLink,
+      issue_date   : new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'})
+    };
+
+    // ── PRIMARY: EmailJS ────────────────────────────────
+    emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      emailParams
+    )
+    .then(function() {
+      showToast('✅ Email sent successfully via EmailJS!', 'success');
+      updateDeclSentStatus(declId, to);
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = '📧 Open Email Client';
+      closeEmailModal();
+    })
+    .catch(function(err) {
+      console.warn('EmailJS failed:', err);
+      showToast('EmailJS failed — trying backup...', 'warn');
+
+      // ── BACKUP: Google Apps Script ──────────────────
+      if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL') {
+        fetch(APPS_SCRIPT_URL, {
+          method : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body   : JSON.stringify({
+            action  : 'sendEmail',
+            to      : to,
+            subject : subject,
+            declData: emailParams
+          }),
+          mode: 'no-cors'
+        })
+        .then(function() {
+          showToast('✅ Email sent via Gmail backup!', 'success');
+          updateDeclSentStatus(declId, to);
+          closeEmailModal();
+        })
+        .catch(function() {
+          // Final fallback: open mailto
+          showToast('Auto-send failed — opening email client...', 'warn');
+          window.open('mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body), '_blank');
+          updateDeclSentStatus(declId, to);
+          closeEmailModal();
+        })
+        .finally(function() {
+          sendBtn.disabled = false;
+          sendBtn.innerHTML = '📧 Open Email Client';
+        });
+      } else {
+        // No Apps Script — mailto fallback
+        window.open('mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body), '_blank');
+        updateDeclSentStatus(declId, to);
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = '📧 Open Email Client';
+        closeEmailModal();
+      }
     });
-  }
-  closeEmailModal();
+  });
+}
+
+function updateDeclSentStatus(declId, to) {
+  if (!declId) return;
+  db.collection('declarations').doc(declId).update({
+    status : 'sent',
+    sentAt : firebase.firestore.FieldValue.serverTimestamp(),
+    sentTo : to
+  }).then(function() { loadDeclarations(); });
 }
 
 // ── LOAD DECLARATIONS (ADMIN) ────────────────────────────
