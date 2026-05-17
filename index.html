@@ -1082,8 +1082,13 @@ window.addEventListener('beforeinstallprompt',function(e){
   setTimeout(function(){ if(deferredPrompt) document.getElementById('installBanner').style.display='flex'; },3000);
 });
 function installApp(){
-  if(!deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(function(r){ if(r.outcome==='accepted') showToast('App installed!','success'); deferredPrompt=null; document.getElementById('installBanner').style.display='none'; });
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(r){
+    if(r.outcome==='accepted') showToast('App installed!','success');
+    deferredPrompt=null;
+    document.getElementById('installBanner').style.display='none';
+  });
 }
 </script>
 </body>
