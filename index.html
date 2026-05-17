@@ -2,292 +2,276 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HDD Evidence Manager</title>
 
-<!-- ── PWA META TAGS ── -->
-<meta name="application-name"        content="HDD Manager">
-<meta name="description"             content="Income Tax Dept — Digital Evidence HDD Management">
-<meta name="theme-color"             content="#00c8ff">
-<meta name="mobile-web-app-capable"  content="yes">
+<!-- PWA META -->
+<meta name="application-name"                        content="HDD Manager">
+<meta name="apple-mobile-web-app-capable"            content="yes">
+<meta name="apple-mobile-web-app-status-bar-style"   content="black-translucent">
+<meta name="apple-mobile-web-app-title"              content="HDD Manager">
+<meta name="mobile-web-app-capable"                  content="yes">
+<meta name="theme-color"                             content="#00c8ff">
+<meta name="description" content="Income Tax Dept Digital Evidence Unit — HDD Declaration System">
+<link rel="manifest"          href="manifest.json">
+<link rel="apple-touch-icon"  sizes="192x192" href="icons/icon-192.png">
+<link rel="icon"              type="image/png" href="icons/icon-96.png">
 
-<!-- ── iOS PWA SUPPORT ── -->
-<meta name="apple-mobile-web-app-capable"          content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title"            content="HDD Manager">
-
-<!-- ── iOS SPLASH COLORS ── -->
-<meta name="msapplication-TileColor"  content="#0a0e1a">
-<meta name="msapplication-navbutton-color" content="#00c8ff">
-
-<!-- ── MANIFEST ── -->
-<link rel="manifest" href="./manifest.json">
-
-<!-- ── iOS ICONS (inline SVG as data URI) ── -->
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230a0e1a'/%3E%3Cellipse cx='90' cy='60' rx='55' ry='18' stroke='%2300c8ff' stroke-width='6' fill='none'/%3E%3Cpath d='M35 60v60c0 10 25 18 55 18s55-8 55-18V60' stroke='%2300c8ff' stroke-width='6' fill='none'/%3E%3Cpath d='M35 90c0 10 25 18 55 18s55-8 55-18' stroke='%2300c8ff' stroke-width='6' fill='none'/%3E%3C/svg%3E">
-
-<!-- ── FAVICON ── -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0e1a'/%3E%3Cellipse cx='16' cy='10' rx='10' ry='4' stroke='%2300c8ff' stroke-width='2' fill='none'/%3E%3Cpath d='M6 10v12c0 2 4.5 4 10 4s10-2 10-4V10' stroke='%2300c8ff' stroke-width='2' fill='none'/%3E%3Cpath d='M6 16c0 2 4.5 4 10 4s10-2 10-4' stroke='%2300c8ff' stroke-width='2' fill='none'/%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0a0e1a; --surface:#0f1629; --card:#141c35; --border:#1e2d5a;
-  --accent:#00c8ff; --accent2:#7b5ea7; --success:#00e5a0;
-  --error:#ff4d6d; --warn:#ffb347; --text:#e0e8ff; --muted:#5a6a99;
-  --admin:#b490e8; --glow:0 0 20px rgba(0,200,255,0.3);
+:root{
+  --bg:#0a0e1a;--surface:#0f1629;--card:#141c35;--border:#1e2d5a;
+  --accent:#00c8ff;--accent2:#7b5ea7;--success:#00e5a0;
+  --error:#ff4d6d;--warn:#ffb347;--text:#e0e8ff;--muted:#5a6a99;
+  --admin:#b490e8;--glow:0 0 20px rgba(0,200,255,0.3);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);font-family:'Rajdhani',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,200,255,0.03)1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,0.03)1px,transparent 1px);background-size:40px 40px;animation:gridMove 20s linear infinite;pointer-events:none;z-index:0;}
 @keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(40px)}}
-.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:0.10;pointer-events:none;z-index:0;animation:orbFloat 10s ease-in-out infinite;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.10;pointer-events:none;z-index:0;animation:orbFloat 10s ease-in-out infinite;}
 .orb1{width:400px;height:400px;background:var(--accent);top:-100px;right:-100px;}
 .orb2{width:300px;height:300px;background:var(--accent2);bottom:-50px;left:-50px;animation-delay:4s;}
 .orb3{width:200px;height:200px;background:var(--success);top:50%;left:30%;animation-delay:7s;}
 @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-20px) scale(1.05)}}
 
-.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;transition:opacity 0.5s ease,transform 0.5s ease;}
+/* Pages */
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 16px;transition:opacity .5s ease,transform .5s ease;}
 .page.hidden{opacity:0;pointer-events:none;transform:translateY(-30px);position:absolute;width:100%;}
 
 /* Header */
-.header{text-align:center;margin-bottom:28px;opacity:0;animation:slideDown 0.8s ease forwards;}
-.header-icon{display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;border:2px solid var(--accent);border-radius:16px;margin-bottom:14px;box-shadow:var(--glow);animation:iconPulse 3s ease-in-out infinite;}
+.hdr{text-align:center;margin-bottom:24px;opacity:0;animation:slideDown .8s ease forwards;}
+.hdr-icon{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border:2px solid var(--accent);border-radius:16px;margin-bottom:12px;box-shadow:var(--glow);animation:iconPulse 3s ease-in-out infinite;}
 @keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(0,200,255,0.3)}50%{box-shadow:0 0 40px rgba(0,200,255,0.6)}}
-.header-icon svg{width:34px;height:34px;color:var(--accent);}
-.header h1{font-size:2rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px;}
-.header p{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:0.78rem;letter-spacing:1px;}
-.scan-line{width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:16px 0;animation:scanAnim 3s ease-in-out infinite;}
-@keyframes scanAnim{0%,100%{opacity:0.3;transform:scaleX(0.5)}50%{opacity:1;transform:scaleX(1)}}
+.hdr-icon svg{width:32px;height:32px;color:var(--accent);}
+.hdr h1{font-size:1.9rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+.hdr p{font-family:'Share Tech Mono',monospace;color:var(--muted);font-size:.76rem;letter-spacing:1px;}
+.scan-line{width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:14px 0;animation:scanAnim 3s ease-in-out infinite;}
+@keyframes scanAnim{0%,100%{opacity:.3;transform:scaleX(.5)}50%{opacity:1;transform:scaleX(1)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:translateY(0)}}
 
 /* Cards */
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:34px;position:relative;overflow:hidden;width:100%;max-width:460px;}
-.card::before,.form-card::before,.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);}
-.form-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;margin-bottom:16px;}
-.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;overflow:hidden;margin-bottom:16px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;position:relative;overflow:hidden;width:100%;max-width:460px;}
+.card::before,.fc::before,.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;position:relative;overflow:hidden;margin-bottom:14px;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;margin-bottom:12px;}
 
 /* Fields */
-.fg{margin-bottom:18px;opacity:0;transform:translateY(14px);animation:fieldReveal 0.6s ease forwards;}
+.fg{margin-bottom:16px;opacity:0;transform:translateY(12px);animation:frev .6s ease forwards;}
 .fg:nth-child(1){animation-delay:.05s}.fg:nth-child(2){animation-delay:.1s}
 .fg:nth-child(3){animation-delay:.15s}.fg:nth-child(4){animation-delay:.2s}
 .fg:nth-child(5){animation-delay:.25s}.fg:nth-child(6){animation-delay:.3s}
 .fg:nth-child(7){animation-delay:.35s}.fg:nth-child(8){animation-delay:.4s}
-@keyframes fieldReveal{to{opacity:1;transform:translateY(0)}}
-label{display:block;font-size:0.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;font-family:'Share Tech Mono',monospace;}
-label span.opt{color:var(--muted);font-size:0.66rem;margin-left:5px;text-transform:none;}
-input,textarea,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.96rem;font-weight:500;transition:all 0.3s ease;outline:none;appearance:none;}
-input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,200,255,0.1);background:rgba(0,200,255,0.03);}
+@keyframes frev{to{opacity:1;transform:translateY(0)}}
+label{display:block;font-size:.71rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:5px;font-family:'Share Tech Mono',monospace;}
+label span.opt{color:var(--muted);font-size:.65rem;margin-left:5px;text-transform:none;}
+input,textarea,select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:.94rem;font-weight:500;transition:all .3s ease;outline:none;appearance:none;}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,200,255,.1);background:rgba(0,200,255,.03);}
 input::placeholder,textarea::placeholder{color:var(--muted);font-weight:400;}
-textarea{resize:vertical;min-height:72px;}
-.mono{font-family:'Share Tech Mono',monospace!important;font-size:0.88rem!important;letter-spacing:1px;}
-.hint{font-family:'Share Tech Mono',monospace;font-size:0.67rem;color:var(--muted);margin-top:4px;}
+textarea{resize:vertical;min-height:68px;}
+.mono{font-family:'Share Tech Mono',monospace!important;font-size:.88rem!important;letter-spacing:1px;}
+.hint{font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--muted);margin-top:3px;}
 select option{background:var(--card);}
 
 /* Serial tags */
-.stags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
-.stag{background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.3);border-radius:6px;padding:3px 9px;font-family:'Share Tech Mono',monospace;font-size:0.73rem;color:var(--accent);display:flex;align-items:center;gap:5px;animation:tagPop .2s ease;}
-@keyframes tagPop{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
-.stag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.88rem;width:auto;padding:0;}
+.stags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.stag{background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.3);border-radius:6px;padding:3px 8px;font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--accent);display:flex;align-items:center;gap:4px;animation:tagPop .2s ease;}
+@keyframes tagPop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.stag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.86rem;width:auto;padding:0;}
 .stag button:hover{color:var(--error);}
-.badge{display:inline-flex;align-items:center;justify-content:center;background:rgba(0,200,255,0.15);border:1px solid rgba(0,200,255,0.3);border-radius:50px;padding:2px 9px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent);margin-left:6px;vertical-align:middle;}
+.bdg{display:inline-flex;align-items:center;justify-content:center;background:rgba(0,200,255,.15);border:1px solid rgba(0,200,255,.3);border-radius:50px;padding:2px 8px;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--accent);margin-left:5px;vertical-align:middle;}
 
 /* Pills */
-.pills{display:flex;flex-wrap:wrap;gap:7px;}
-.pill{padding:8px 15px;border:1px solid var(--border);border-radius:50px;background:var(--surface);color:var(--muted);font-size:0.84rem;font-weight:600;cursor:pointer;transition:all .25s ease;letter-spacing:1px;text-transform:uppercase;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;}
+.pill{padding:7px 14px;border:1px solid var(--border);border-radius:50px;background:var(--surface);color:var(--muted);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .25s ease;letter-spacing:1px;text-transform:uppercase;}
 .pill:hover{border-color:var(--accent);color:var(--accent);}
-.pill.active{border-color:var(--accent);background:rgba(0,200,255,0.15);color:var(--accent);}
+.pill.active{border-color:var(--accent);background:rgba(0,200,255,.15);color:var(--accent);}
 
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-@media(max-width:540px){.grid-2{grid-template-columns:1fr}.form-card,.card,.panel{padding:18px}}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:540px){.grid-2{grid-template-columns:1fr}.fc,.card,.panel{padding:16px}}
 
-.divider{border:none;border-top:1px solid var(--border);margin:20px 0;position:relative;}
-.divider::before{content:attr(data-label);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);padding:0 12px;font-family:'Share Tech Mono',monospace;font-size:0.67rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0;position:relative;}
+.divider::before{content:attr(data-label);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);padding:0 10px;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;white-space:nowrap;}
 
 /* Buttons */
-.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s ease;}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#0077ff);color:#fff;box-shadow:0 4px 20px rgba(0,200,255,0.3);}
-.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:left .5s ease;}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,200,255,0.5);}
+.btn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Rajdhani',sans-serif;font-size:.98rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:all .3s ease;}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#0077ff);color:#fff;box-shadow:0 4px 18px rgba(0,200,255,.3);}
+.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transition:left .5s ease;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(0,200,255,.5);}
 .btn-primary:hover::before{left:100%;}
-.btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none;}
 .btn-success{background:linear-gradient(135deg,var(--success),#00a870);color:#000;}
 .btn-success:hover{transform:translateY(-2px);}
-.btn-error{background:linear-gradient(135deg,var(--error),#cc0000);color:#fff;}
-.btn-error:hover{transform:translateY(-2px);}
+.btn-success:disabled{opacity:.6;cursor:not-allowed;transform:none;}
 .btn-warn{background:linear-gradient(135deg,var(--warn),#ff8800);color:#000;}
 .btn-warn:hover{transform:translateY(-2px);}
-.btn-sm{width:auto;padding:7px 14px;font-size:0.78rem;letter-spacing:1px;border-radius:8px;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:0.76rem;padding:7px 14px;width:auto;letter-spacing:1px;border-radius:8px;cursor:pointer;transition:all .2s;}
-.btn-ghost:hover{border-color:var(--error);color:var(--error);}
 .btn-admin{background:linear-gradient(135deg,var(--admin),var(--accent2));color:#fff;}
+.btn-error{background:linear-gradient(135deg,var(--error),#cc0000);color:#fff;}
+.btn-sm{width:auto;padding:7px 13px;font-size:.76rem;letter-spacing:1px;border-radius:8px;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:.74rem;padding:6px 13px;width:auto;letter-spacing:1px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{border-color:var(--error);color:var(--error);}
+.btn-copy{background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.3);color:var(--accent);font-size:.74rem;padding:6px 13px;width:auto;letter-spacing:1px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;transition:all .2s;}
+.btn-copy:hover{background:rgba(0,200,255,.2);}
 
 /* Nav tabs */
-.nav-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:22px;width:100%;flex-wrap:wrap;}
-.nav-tab{flex:1;padding:10px 6px;background:none;border:none;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:0.84rem;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .25s ease;text-transform:uppercase;border-radius:10px;white-space:nowrap;}
-.nav-tab.active{background:rgba(0,200,255,0.15);color:var(--accent);}
-.nav-tab.admin-tab.active{background:rgba(180,144,232,0.2);color:var(--admin);}
-.nav-tab.warn-tab.active{background:rgba(255,179,71,0.15);color:var(--warn);}
-.nav-tab.success-tab.active{background:rgba(0,229,160,0.15);color:var(--success);}
+.nav-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:3px;margin-bottom:18px;width:100%;flex-wrap:wrap;}
+.nav-tab{flex:1;padding:9px 5px;background:none;border:none;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .25s ease;text-transform:uppercase;border-radius:10px;white-space:nowrap;}
+.nav-tab.active{background:rgba(0,200,255,.15);color:var(--accent);}
+.nav-tab.admin-tab.active{background:rgba(180,144,232,.2);color:var(--admin);}
+.nav-tab.warn-tab.active{background:rgba(255,179,71,.15);color:var(--warn);}
+.nav-tab.success-tab.active{background:rgba(0,229,160,.15);color:var(--success);}
 
 /* User badge */
-.user-badge{display:flex;align-items:center;gap:8px;border-radius:50px;padding:6px 14px;margin-bottom:18px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;}
-.user-badge.admin{background:rgba(180,144,232,0.1);border:1px solid rgba(180,144,232,0.3);color:var(--admin);}
-.user-badge.user{background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.25);color:var(--success);}
+.ubadge{display:flex;align-items:center;gap:7px;border-radius:50px;padding:6px 13px;margin-bottom:16px;font-family:'Share Tech Mono',monospace;font-size:.73rem;}
+.ubadge.admin{background:rgba(180,144,232,.1);border:1px solid rgba(180,144,232,.3);color:var(--admin);}
+.ubadge.user{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);color:var(--success);}
 .dot{width:7px;height:7px;border-radius:50%;animation:dotPulse 2s ease-in-out infinite;flex-shrink:0;}
 .dot.admin{background:var(--admin);}
 .dot.user{background:var(--success);}
-@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.7)}}
-
-/* Role badge */
-.role-badge{display:inline-flex;padding:3px 10px;border-radius:6px;font-size:0.68rem;font-weight:700;font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;}
-.role-admin{background:rgba(180,144,232,0.15);border:1px solid rgba(180,144,232,0.4);color:var(--admin);}
-.role-user{background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--success);}
-
-/* Ticket card */
-.ticket-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:12px;transition:all .3s ease;position:relative;overflow:hidden;}
-.ticket-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
-.ticket-card.pending::before{background:var(--warn);}
-.ticket-card.approved::before{background:var(--success);}
-.ticket-card.rejected::before{background:var(--error);}
-.ticket-card.completed::before{background:var(--accent);}
-.ticket-card:hover{border-color:rgba(0,200,255,0.3);transform:translateY(-1px);}
-
-.ticket-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
-.ticket-id{font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--muted);}
-.ticket-serials{font-family:'Share Tech Mono',monospace;font-size:0.82rem;color:var(--accent);margin-bottom:6px;word-break:break-all;}
-.ticket-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:0.8rem;color:var(--muted);margin-bottom:8px;}
-.ticket-meta span{display:flex;align-items:center;gap:4px;}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
 
 /* Status badges */
-.status-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:700;font-family:'Share Tech Mono',monospace;letter-spacing:0.5px;text-transform:uppercase;}
-.s-pending{background:rgba(255,179,71,0.12);border:1px solid rgba(255,179,71,0.4);color:var(--warn);}
-.s-approved{background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--success);}
-.s-rejected{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--error);}
-.s-completed{background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.3);color:var(--accent);}
-.s-used{background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);color:var(--success);}
-.s-unused{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--error);}
+.sbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:50px;font-size:.7rem;font-weight:700;font-family:'Share Tech Mono',monospace;letter-spacing:.5px;text-transform:uppercase;}
+.s-pending{background:rgba(255,179,71,.12);border:1px solid rgba(255,179,71,.4);color:var(--warn);}
+.s-sent{background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.3);color:var(--accent);}
+.s-acknowledged{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--success);}
+.s-completed{background:rgba(180,144,232,.15);border:1px solid rgba(180,144,232,.4);color:var(--admin);}
+.s-used{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--success);}
+.s-unused{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);color:var(--error);}
 
-/* Admin action buttons row */
-.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+/* Declaration card */
+.decl-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden;transition:all .3s ease;}
+.decl-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+.decl-card.pending::before{background:var(--warn);}
+.decl-card.sent::before{background:var(--accent);}
+.decl-card.acknowledged::before{background:var(--success);}
+.decl-card.completed::before{background:var(--admin);}
+.decl-card:hover{border-color:rgba(0,200,255,.3);transform:translateY(-1px);}
+.decl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.decl-id{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--muted);}
+.decl-serials{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--accent);margin-bottom:5px;word-break:break-all;line-height:1.5;}
+.decl-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+.action-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+
+/* Declaration acknowledge form */
+.ack-box{background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.2);border-radius:12px;padding:16px;margin-bottom:14px;}
+.ack-serial-list{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+.ack-serial{background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:6px;padding:4px 10px;font-family:'Share Tech Mono',monospace;font-size:.76rem;color:var(--accent);}
 
 /* Stats */
-.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;position:relative;overflow:hidden;}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;text-align:center;position:relative;overflow:hidden;}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
 .sc-blue::before{background:linear-gradient(90deg,transparent,var(--accent),transparent);}
 .sc-green::before{background:linear-gradient(90deg,transparent,var(--success),transparent);}
-.sc-red::before{background:linear-gradient(90deg,transparent,var(--error),transparent);}
 .sc-purple::before{background:linear-gradient(90deg,transparent,var(--admin),transparent);}
 .sc-warn::before{background:linear-gradient(90deg,transparent,var(--warn),transparent);}
-.stat-num{font-size:2rem;font-weight:700;font-family:'Share Tech Mono',monospace;margin-bottom:3px;}
+.stat-num{font-size:1.9rem;font-weight:700;font-family:'Share Tech Mono',monospace;margin-bottom:2px;}
 .sc-blue .stat-num{color:var(--accent);}
 .sc-green .stat-num{color:var(--success);}
-.sc-red .stat-num{color:var(--error);}
 .sc-purple .stat-num{color:var(--admin);}
 .sc-warn .stat-num{color:var(--warn);}
-.stat-label{font-size:0.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Share Tech Mono',monospace;}
+.stat-label{font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Share Tech Mono',monospace;}
 
-/* Table */
-.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
-table{width:100%;border-collapse:collapse;font-size:0.86rem;}
-thead tr{background:rgba(0,200,255,0.06);}
-th{padding:11px 13px;text-align:left;font-size:0.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;white-space:nowrap;border-bottom:1px solid var(--border);}
-td{padding:10px 13px;border-bottom:1px solid rgba(30,45,90,0.5);vertical-align:middle;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:rgba(0,200,255,0.02);}
-
-/* Admin notes */
-.admin-note{background:rgba(180,144,232,0.06);border:1px solid rgba(180,144,232,0.2);border-radius:8px;padding:10px 12px;font-size:0.82rem;color:var(--admin);margin-top:8px;font-style:italic;}
+/* Link box */
+.link-box{background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;}
+.link-url{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--accent);flex:1;word-break:break-all;}
 
 /* Spinner */
-.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Toast */
-.toast{position:fixed;bottom:26px;right:26px;padding:13px 20px;border-radius:12px;font-weight:600;font-size:0.88rem;letter-spacing:1px;z-index:9999;transform:translateY(100px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:320px;}
+.toast{position:fixed;bottom:24px;right:20px;padding:12px 18px;border-radius:12px;font-weight:600;font-size:.86rem;letter-spacing:1px;z-index:9999;transform:translateY(100px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);max-width:300px;}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast.success{background:rgba(0,229,160,0.15);border:1px solid var(--success);color:var(--success);}
-.toast.error{background:rgba(255,77,109,0.15);border:1px solid var(--error);color:var(--error);}
-.toast.info{background:rgba(0,200,255,0.15);border:1px solid var(--accent);color:var(--accent);}
-.toast.warn{background:rgba(255,179,71,0.15);border:1px solid var(--warn);color:var(--warn);}
+.toast.success{background:rgba(0,229,160,.15);border:1px solid var(--success);color:var(--success);}
+.toast.error{background:rgba(255,77,109,.15);border:1px solid var(--error);color:var(--error);}
+.toast.info{background:rgba(0,200,255,.15);border:1px solid var(--accent);color:var(--accent);}
+.toast.warn{background:rgba(255,179,71,.15);border:1px solid var(--warn);color:var(--warn);}
 
 /* Modal */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s ease;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .3s ease;}
 .modal-bg.show{opacity:1;pointer-events:all;}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:500px;position:relative;overflow:hidden;animation:modalIn .3s ease;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;width:100%;max-width:480px;position:relative;overflow:hidden;animation:modalIn .3s ease;max-height:90vh;overflow-y:auto;}
 .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--admin),transparent);}
-@keyframes modalIn{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes modalIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
 
-/* Empty state */
-.empty{text-align:center;padding:40px 20px;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:0.8rem;}
+.empty{text-align:center;padding:36px 16px;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:.78rem;}
+.app-container{max-width:1000px;width:100%;padding-bottom:40px;}
+.form-container{max-width:640px;width:100%;}
+.search-bar{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+.search-bar input{flex:1;min-width:140px;}
+.search-bar select{width:120px;}
 
-.app-container{max-width:1100px;width:100%;padding-bottom:40px;}
-.form-container{max-width:680px;width:100%;}
-
-/* Search bar */
-.search-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
-.search-bar input{flex:1;min-width:160px;}
-.search-bar select{width:130px;}
-
-/* Ticket number style */
-.tnum{font-family:'Share Tech Mono',monospace;font-size:0.88rem;color:var(--warn);font-weight:700;}
+/* Install banner */
+#installBanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#141c35,#0f1629);border-top:1px solid #1e2d5a;padding:12px 16px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 </style>
 </head>
 <body>
 <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
 <div class="toast" id="toast"></div>
 
-<!-- Install Banner (Android) -->
-<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#141c35,#0f1629);border-top:1px solid #1e2d5a;padding:14px 20px;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <img src="icons/icon-72.png" style="width:40px;height:40px;border-radius:10px;">
+<!-- Install Banner -->
+<div id="installBanner">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <img src="icons/icon-72.png" style="width:38px;height:38px;border-radius:9px;">
     <div>
-      <div style="font-weight:700;font-size:0.95rem;color:#e0e8ff;">Install HDD Manager</div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#5a6a99;">Add to home screen for app experience</div>
+      <div style="font-weight:700;font-size:.9rem;color:#e0e8ff;">Install HDD Manager</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:.67rem;color:#5a6a99;">Add to home screen</div>
     </div>
   </div>
-  <div style="display:flex;gap:8px;">
-    <button onclick="installApp()" style="padding:9px 18px;background:linear-gradient(135deg,#00c8ff,#0077ff);border:none;border-radius:8px;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.88rem;letter-spacing:1px;cursor:pointer;">Install</button>
-    <button onclick="document.getElementById('installBanner').style.display='none'" style="padding:9px 14px;background:transparent;border:1px solid #1e2d5a;border-radius:8px;color:#5a6a99;font-family:'Rajdhani',sans-serif;font-size:0.88rem;cursor:pointer;">✕</button>
+  <div style="display:flex;gap:7px;">
+    <button onclick="installApp()" style="padding:8px 16px;background:linear-gradient(135deg,#00c8ff,#0077ff);border:none;border-radius:8px;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.84rem;letter-spacing:1px;cursor:pointer;">Install</button>
+    <button onclick="document.getElementById('installBanner').style.display='none'" style="padding:8px 12px;background:transparent;border:1px solid #1e2d5a;border-radius:8px;color:#5a6a99;cursor:pointer;">✕</button>
   </div>
 </div>
 
-<!-- Close modal on bg click -->
-<script>document.addEventListener('DOMContentLoaded',function(){document.getElementById('noteModal').addEventListener('click',function(e){if(e.target===this)closeModal();});});</script>
-
-<!-- ══════════ ADMIN NOTE MODAL ══════════ -->
-<div class="modal-bg" id="noteModal">
+<!-- EMAIL MODAL -->
+<div class="modal-bg" id="emailModal">
   <div class="modal">
-    <h3 style="color:var(--admin);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-size:1rem;">Update Ticket</h3>
-    <p id="modalTicketInfo" style="font-family:'Share Tech Mono',monospace;font-size:0.74rem;color:var(--muted);margin-bottom:18px;"></p>
+    <h3 style="color:var(--admin);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-size:.95rem;">Send Declaration Link</h3>
+    <p id="emailModalInfo" style="font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--muted);margin-bottom:16px;"></p>
+
+    <!-- Declaration link box -->
     <div class="fg">
-      <label style="color:var(--admin);">Status</label>
-      <select id="modalStatus">
-        <option value="pending">⏳ Pending</option>
-        <option value="approved">✅ Approved</option>
-        <option value="rejected">❌ Rejected</option>
-        <option value="completed">✔️ Completed</option>
-      </select>
+      <label style="color:var(--accent);">Declaration Link</label>
+      <div class="link-box">
+        <span class="link-url" id="emailModalLink"></span>
+        <button class="btn-copy" onclick="copyDeclLink()">📋 Copy</button>
+      </div>
+    </div>
+
+    <hr class="divider" data-label="Send via Email">
+
+    <div class="fg">
+      <label>Employee Email</label>
+      <input type="email" id="emailTo" placeholder="employee@incometax.gov.in">
     </div>
     <div class="fg">
-      <label style="color:var(--admin);">Admin Note <span class="opt">/ optional</span></label>
-      <textarea id="modalNote" placeholder="Add a note for the user..."></textarea>
+      <label>Email Subject</label>
+      <input type="text" id="emailSubject" value="HDD Declaration — Please Acknowledge Receipt">
     </div>
-    <div style="display:flex;gap:10px;margin-top:6px;">
-      <button class="btn btn-admin btn-sm" style="flex:1;padding:12px;" onclick="saveTicketUpdate()">Save Update</button>
-      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <div class="fg">
+      <label>Message</label>
+      <textarea id="emailBody" rows="4"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <button class="btn btn-primary btn-sm" style="flex:1;padding:11px;" onclick="sendEmail()">📧 Open Email Client</button>
+      <button class="btn btn-ghost" onclick="closeEmailModal()">Close</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════ LOGIN PAGE ══════════ -->
+<!-- ════════════ LOGIN ════════════ -->
 <div class="page" id="loginPage">
-  <div class="header">
-    <div class="header-icon">
+  <div class="hdr">
+    <div class="hdr-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
         <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
       </svg>
     </div>
@@ -303,130 +287,153 @@ tr:hover td{background:rgba(0,200,255,0.02);}
     <div class="fg">
       <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Access System</button>
     </div>
-    <div style="text-align:center;margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--muted);">
-      Admins get full dashboard · Others get ticket portal
+    <div style="text-align:center;margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);">
+      Admins → Full Dashboard &nbsp;|&nbsp; Others → Declaration Portal
     </div>
   </div>
 </div>
 
-<!-- ══════════ ADMIN APP ══════════ -->
-<div class="page hidden" id="adminPage" style="justify-content:flex-start;padding-top:30px;">
+<!-- ════════════ ADMIN ════════════ -->
+<div class="page hidden" id="adminPage" style="justify-content:flex-start;padding-top:24px;">
   <div class="app-container">
-
-    <!-- Top bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
       <div>
-        <div style="font-size:1.2rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--admin),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">HDD Evidence Manager</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.68rem;color:var(--muted);">INCOME TAX DEPARTMENT // ADMIN PANEL</div>
+        <div style="font-size:1.15rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--admin),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">HDD Evidence Manager</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--muted);">INCOME TAX DEPT // ADMIN PANEL</div>
       </div>
-      <div class="user-badge admin" style="margin-bottom:0;">
+      <div class="ubadge admin" style="margin-bottom:0;">
         <div class="dot admin"></div>
-        <span class="role-badge role-admin">Admin</span>
-        <span id="adminEmailDisplay"></span>
-        <button class="btn-ghost btn-sm" onclick="doLogout()">Sign Out</button>
+        <span style="background:rgba(180,144,232,.15);border:1px solid rgba(180,144,232,.4);color:var(--admin);padding:2px 8px;border-radius:5px;font-size:.66rem;font-weight:700;letter-spacing:1px;">ADMIN</span>
+        <span id="adminEmail"></span>
+        <button class="btn-ghost" onclick="doLogout()">Sign Out</button>
       </div>
     </div>
 
-    <!-- Admin Nav tabs -->
     <div class="nav-tabs">
-      <button class="nav-tab active"       id="atab-tickets" onclick="adminTab('tickets')">🎫 Tickets</button>
-      <button class="nav-tab admin-tab"    id="atab-hdds"    onclick="adminTab('hdds')">💾 HDD Records</button>
-      <button class="nav-tab success-tab"  id="atab-new"     onclick="adminTab('new')">➕ Add HDD</button>
-      <button class="nav-tab warn-tab"     id="atab-date"    onclick="adminTab('date')">📅 Used Date</button>
+      <button class="nav-tab active"      id="atab-decl"    onclick="aTab('decl')">📋 Declarations</button>
+      <button class="nav-tab admin-tab"   id="atab-new"     onclick="aTab('new')">➕ Issue HDD</button>
+      <button class="nav-tab success-tab" id="atab-hdds"    onclick="aTab('hdds')">💾 HDD Records</button>
+      <button class="nav-tab warn-tab"    id="atab-date"    onclick="aTab('date')">📅 Used Date</button>
     </div>
 
-    <!-- ── TICKETS TAB ── -->
-    <div id="aTabTickets">
+    <!-- DECLARATIONS TAB -->
+    <div id="aTabDecl">
       <div class="dash-grid">
-        <div class="stat-card sc-warn"><div class="stat-num" id="aStatPending">—</div><div class="stat-label">Pending</div></div>
-        <div class="stat-card sc-green"><div class="stat-num" id="aStatApproved">—</div><div class="stat-label">Approved</div></div>
-        <div class="stat-card sc-red"><div class="stat-num" id="aStatRejected">—</div><div class="stat-label">Rejected</div></div>
-        <div class="stat-card sc-blue"><div class="stat-num" id="aStatCompleted">—</div><div class="stat-label">Completed</div></div>
-        <div class="stat-card sc-purple"><div class="stat-num" id="aStatTotal">—</div><div class="stat-label">Total</div></div>
+        <div class="stat-card sc-warn"><div class="stat-num" id="dStatPending">—</div><div class="stat-label">Pending</div></div>
+        <div class="stat-card sc-blue"><div class="stat-num" id="dStatSent">—</div><div class="stat-label">Link Sent</div></div>
+        <div class="stat-card sc-green"><div class="stat-num" id="dStatAck">—</div><div class="stat-label">Acknowledged</div></div>
+        <div class="stat-card sc-purple"><div class="stat-num" id="dStatTotal">—</div><div class="stat-label">Total</div></div>
       </div>
       <div class="search-bar">
-        <input type="text" id="ticketSearch" placeholder="🔍 Search email, serial, dept..." oninput="filterTickets()">
-        <select id="ticketStatusFilter" onchange="filterTickets()">
+        <input type="text" id="declSearch" placeholder="🔍 Search employee, serial..." oninput="filterDecls()">
+        <select id="declStatusFilter" onchange="filterDecls()">
           <option value="">All Status</option>
           <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
+          <option value="sent">Link Sent</option>
+          <option value="acknowledged">Acknowledged</option>
           <option value="completed">Completed</option>
         </select>
-        <button class="btn btn-sm btn-primary" onclick="loadTickets()">↻ Refresh</button>
+        <button class="btn btn-sm btn-primary" onclick="loadDeclarations()">↻ Refresh</button>
       </div>
-      <div id="ticketsList"><div class="empty">Loading tickets...</div></div>
+      <div id="declList"><div class="empty">Loading declarations...</div></div>
     </div>
 
-    <!-- ── HDD RECORDS TAB ── -->
+    <!-- ISSUE HDD TAB -->
+    <div id="aTabNew" style="display:none;">
+      <div class="fc">
+        <div style="background:rgba(180,144,232,.06);border:1px solid rgba(180,144,232,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--muted);line-height:1.7;">
+          📋 Create a declaration to issue HDDs to an employee.<br>
+          A unique link will be generated and sent to the employee.<br>
+          The employee will acknowledge and fill in the details.
+        </div>
+
+        <div class="fg">
+          <label>Employee Email</label>
+          <input type="email" id="issueEmail" placeholder="employee@incometax.gov.in">
+          <div class="hint">Link will be sent to this email</div>
+        </div>
+
+        <div class="fg">
+          <label>Employee Name <span class="opt">/ optional</span></label>
+          <input type="text" id="issueName" placeholder="Full name of employee">
+        </div>
+
+        <hr class="divider" data-label="HDD Details">
+
+        <div class="fg">
+          <label>Serial Number(s) <span id="issueSerialCount" class="bdg" style="display:none">0</span></label>
+          <textarea class="mono" id="issueSerialInput" placeholder="e.g. WX72A65L4176, WX62A65RNR3Z" rows="2" oninput="updateIssueSerials()"></textarea>
+          <div class="hint">Separate multiple serials with commas</div>
+          <div class="stags" id="issueSerialTags"></div>
+        </div>
+
+        <div class="grid-2 fg">
+          <div>
+            <label>HDD Size</label>
+            <select id="issueSize">
+              <option value="">Select...</option>
+              <option value="1 TB">1 TB</option>
+              <option value="2 TB">2 TB</option>
+            </select>
+          </div>
+          <div>
+            <label>Quantity</label>
+            <input type="number" id="issueQty" placeholder="Auto-filled" readonly style="background:rgba(0,200,255,.05);border-color:rgba(0,200,255,.2);">
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Transfer Date</label>
+          <input type="date" id="issueDate">
+        </div>
+
+        <div class="fg">
+          <label>Admin Note <span class="opt">/ optional</span></label>
+          <textarea id="issueAdminNote" placeholder="Any special instructions for the employee..."></textarea>
+        </div>
+
+        <div class="fg">
+          <button class="btn btn-admin" id="issuBtn" onclick="createDeclaration()">📋 Create Declaration &amp; Generate Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HDD RECORDS TAB -->
     <div id="aTabHdds" style="display:none;">
       <div class="dash-grid">
         <div class="stat-card sc-blue"><div class="stat-num" id="hStatTotal">—</div><div class="stat-label">Total HDDs</div></div>
         <div class="stat-card sc-green"><div class="stat-num" id="hStatUsed">—</div><div class="stat-label">Used</div></div>
-        <div class="stat-card sc-red"><div class="stat-num" id="hStatUnused">—</div><div class="stat-label">Not Used</div></div>
+        <div class="stat-card sc-warn"><div class="stat-num" id="hStatUnused">—</div><div class="stat-label">Not Used</div></div>
         <div class="stat-card sc-blue"><div class="stat-num" id="hStat1tb">—</div><div class="stat-label">1 TB</div></div>
         <div class="stat-card sc-purple"><div class="stat-num" id="hStat2tb">—</div><div class="stat-label">2 TB</div></div>
       </div>
       <div class="search-bar">
-        <input type="text" id="hddSearch" placeholder="🔍 Search serial, examiner, dept..." oninput="filterHdds()">
-        <select id="hddSizeFilter" onchange="filterHdds()"><option value="">All Sizes</option><option value="1 TB">1 TB</option><option value="2 TB">2 TB</option></select>
-        <select id="hddStatusFilter" onchange="filterHdds()"><option value="">All Status</option><option value="Used">Used</option><option value="Not Used">Not Used</option></select>
+        <input type="text" id="hSearch" placeholder="🔍 Search serial, examiner..." oninput="filterHdds()">
+        <select id="hSizeF" onchange="filterHdds()"><option value="">All Sizes</option><option value="1 TB">1 TB</option><option value="2 TB">2 TB</option></select>
+        <select id="hStatF" onchange="filterHdds()"><option value="">All Status</option><option value="Used">Used</option><option value="Not Used">Not Used</option></select>
         <button class="btn btn-sm btn-primary" onclick="loadHdds()">↻ Refresh</button>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>#</th><th>Serial</th><th>Size</th><th>Status</th><th>Used Date</th><th>Dept</th><th>Location</th><th>Examiner</th><th>Purpose</th></tr></thead>
-          <tbody id="hddTableBody"><tr><td colspan="9"><div class="empty">Loading...</div></td></tr></tbody>
+      <div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border);">
+        <table style="width:100%;border-collapse:collapse;font-size:.84rem;">
+          <thead><tr style="background:rgba(0,200,255,.06);">
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">#</th>
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">Serial</th>
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">Size</th>
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">Status</th>
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">Used Date</th>
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">Dept</th>
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">Examiner</th>
+            <th style="padding:10px 12px;text-align:left;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;border-bottom:1px solid var(--border);">Issued To</th>
+          </tr></thead>
+          <tbody id="hddTbody"><tr><td colspan="8"><div class="empty">Loading...</div></td></tr></tbody>
         </table>
       </div>
-      <div id="hddCount" style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--muted);margin-top:8px;text-align:right;"></div>
+      <div id="hddCnt" style="font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);margin-top:7px;text-align:right;"></div>
     </div>
 
-    <!-- ── ADD HDD TAB ── -->
-    <div id="aTabNew" style="display:none;">
-      <div class="form-card">
-        <div class="fg">
-          <label>Serial Number(s) <span id="aSerialCount" class="badge" style="display:none">0</span></label>
-          <textarea class="mono" id="aSerialInput" placeholder="e.g. WX72A65L4176, WX62A65RNR3Z" rows="2" oninput="updateASerialTags()"></textarea>
-          <div class="hint">Separate multiple serials with commas</div>
-          <div class="stags" id="aSerialTags"></div>
-        </div>
-        <div class="fg">
-          <label>HDD Size</label>
-          <select id="aHddSize"><option value="">Select size...</option><option value="1 TB">1 TB</option><option value="2 TB">2 TB</option></select>
-        </div>
-        <hr class="divider" data-label="Usage Details">
-        <div class="fg">
-          <label>Used Date <span class="opt">/ optional</span></label>
-          <input type="date" id="aUsedDate">
-          <div class="hint">Leave empty if not yet used.</div>
-        </div>
-        <div class="grid-2 fg">
-          <div><label>Department <span class="opt">/ optional</span></label><input type="text" id="aDept" placeholder="e.g. CT, CC"></div>
-          <div><label>Dept Location <span class="opt">/ optional</span></label><input type="text" id="aDeptLoc" placeholder="e.g. Blr"></div>
-        </div>
-        <div class="fg"><label>Examiner <span class="opt">/ optional</span></label><input type="text" id="aExaminer" placeholder="Full name"></div>
-        <hr class="divider" data-label="Purpose">
-        <div class="fg">
-          <label>Purpose <span class="opt">/ optional</span></label>
-          <div class="pills">
-            <div class="pill" onclick="selPurpose(this,'Action')">Action</div>
-            <div class="pill" onclick="selPurpose(this,'Extraction')">Extraction</div>
-            <div class="pill" onclick="selPurpose(this,'Cloning')">Cloning</div>
-            <div class="pill" onclick="selPurpose(this,'Analysis')">Analysis</div>
-            <div class="pill" onclick="selPurpose(this,'Other')">Other</div>
-          </div>
-          <input type="hidden" id="aPurpose">
-        </div>
-        <div class="fg"><label>Storage Location <span class="opt">/ optional</span></label><input type="text" id="aStoreLoc" placeholder="Where the HDD is stored"></div>
-        <div class="fg"><label>Note <span class="opt">/ optional</span></label><textarea id="aNote" placeholder="Any additional remarks..."></textarea></div>
-        <div class="fg"><button class="btn btn-success" id="aSubmitBtn" onclick="adminSaveHdd()">💾 Save to Database</button></div>
-      </div>
-    </div>
-
-    <!-- ── USED DATE TAB ── -->
+    <!-- USED DATE TAB -->
     <div id="aTabDate" style="display:none;">
-      <div class="form-card" style="border-color:rgba(255,179,71,0.3);">
+      <div class="fc" style="border-color:rgba(255,179,71,.3);">
         <div class="fg">
           <label style="color:var(--warn);">Serial Number(s)</label>
           <textarea class="mono" id="aDateSerial" placeholder="Enter serial numbers" rows="2" oninput="updateADateTags()"></textarea>
@@ -434,103 +441,66 @@ tr:hover td{background:rgba(0,200,255,0.02);}
         </div>
         <div class="fg">
           <label style="color:var(--warn);">Used Date</label>
-          <input type="date" id="aUpdateDate" style="border-color:rgba(255,179,71,0.4);">
+          <input type="date" id="aUpdateDate" style="border-color:rgba(255,179,71,.4);">
         </div>
         <div class="fg"><button class="btn btn-warn" id="aDateBtn" onclick="adminUpdateDate()">📅 Update Used Date</button></div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════ USER PORTAL ══════════ -->
-<div class="page hidden" id="userPage" style="justify-content:flex-start;padding-top:30px;">
+<!-- ════════════ EMPLOYEE PORTAL ════════════ -->
+<div class="page hidden" id="userPage" style="justify-content:flex-start;padding-top:24px;">
   <div class="form-container">
-
-    <!-- Top bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
       <div>
-        <div style="font-size:1.1rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--accent),var(--success));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">HDD Request Portal</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.67rem;color:var(--muted);">Submit request · Track status</div>
+        <div style="font-size:1.05rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--accent),var(--success));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">HDD Declaration Portal</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);">Acknowledge &amp; complete HDD details</div>
       </div>
-      <div class="user-badge user" style="margin-bottom:0;">
+      <div class="ubadge user" style="margin-bottom:0;">
         <div class="dot user"></div>
-        <span id="userEmailDisplay"></span>
-        <button class="btn-ghost btn-sm" onclick="doLogout()">Sign Out</button>
+        <span id="userEmail"></span>
+        <button class="btn-ghost" onclick="doLogout()">Sign Out</button>
       </div>
     </div>
 
-    <!-- User Nav tabs -->
     <div class="nav-tabs">
-      <button class="nav-tab active"      id="utab-submit" onclick="userTab('submit')">📝 Submit Request</button>
-      <button class="nav-tab success-tab" id="utab-status" onclick="userTab('status')">📋 My Tickets</button>
+      <button class="nav-tab active"      id="utab-pending" onclick="uTab('pending')">📬 Pending</button>
+      <button class="nav-tab success-tab" id="utab-done"    onclick="uTab('done')">✅ Completed</button>
     </div>
 
-    <!-- ── SUBMIT TICKET ── -->
-    <div id="uTabSubmit">
-      <div class="form-card">
-        <div style="background:rgba(0,200,255,0.05);border:1px solid rgba(0,200,255,0.15);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-family:'Share Tech Mono',monospace;font-size:0.74rem;color:var(--muted);line-height:1.7;">
-          📌 Fill this form to request HDD usage.<br>
-          Your ticket will be reviewed by an admin.<br>
-          You can track status in <strong style="color:var(--accent);">"My Tickets"</strong> tab.
-        </div>
-
-        <div class="fg">
-          <label>Serial Number(s) <span id="uSerialCount" class="badge" style="display:none">0</span></label>
-          <textarea class="mono" id="uSerialInput" placeholder="e.g. WX72A65L4176, WX62A65RNR3Z" rows="2" oninput="updateUSerialTags()"></textarea>
-          <div class="hint">Separate multiple serials with commas</div>
-          <div class="stags" id="uSerialTags"></div>
-        </div>
-
-        <div class="fg">
-          <label>Requested Date <span class="opt">/ optional</span></label>
-          <input type="date" id="uUsedDate">
-        </div>
-
-        <div class="grid-2 fg">
-          <div><label>Department <span class="opt">/ optional</span></label><input type="text" id="uDept" placeholder="e.g. CT, CC"></div>
-          <div><label>Location <span class="opt">/ optional</span></label><input type="text" id="uDeptLoc" placeholder="e.g. Blr"></div>
-        </div>
-
-        <div class="fg"><label>Your Name</label><input type="text" id="uExaminer" placeholder="Your full name"></div>
-
-        <hr class="divider" data-label="Purpose">
-
-        <div class="fg">
-          <label>Purpose <span class="opt">/ optional</span></label>
-          <div class="pills">
-            <div class="pill" onclick="selUPurpose(this,'Action')">Action</div>
-            <div class="pill" onclick="selUPurpose(this,'Extraction')">Extraction</div>
-            <div class="pill" onclick="selUPurpose(this,'Cloning')">Cloning</div>
-            <div class="pill" onclick="selUPurpose(this,'Analysis')">Analysis</div>
-            <div class="pill" onclick="selUPurpose(this,'Other')">Other</div>
-          </div>
-          <input type="hidden" id="uPurpose">
-        </div>
-
-        <div class="fg"><label>Note <span class="opt">/ optional</span></label><textarea id="uNote" placeholder="Reason for request or additional info..."></textarea></div>
-
-        <div class="fg"><button class="btn btn-primary" id="uSubmitBtn" onclick="submitTicket()">🎫 Submit Request</button></div>
-      </div>
+    <div id="uTabPending">
+      <div id="pendingDeclList"><div class="empty">Loading your declarations...</div></div>
     </div>
-
-    <!-- ── MY TICKETS ── -->
-    <div id="uTabStatus" style="display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.76rem;color:var(--muted);">Your submitted requests</div>
-        <button class="btn btn-sm btn-primary" onclick="loadMyTickets()">↻ Refresh</button>
-      </div>
-      <div id="myTicketsList"><div class="empty">Loading your tickets...</div></div>
+    <div id="uTabDone" style="display:none;">
+      <div id="doneDeclList"><div class="empty">Loading...</div></div>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════ FIREBASE + APP LOGIC ══════════ -->
+<!-- ════════════ ACKNOWLEDGE PAGE ════════════ -->
+<div class="page hidden" id="ackPage">
+  <div class="form-container">
+    <div class="hdr" style="margin-bottom:16px;">
+      <div class="hdr-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3s9 4.03 9 9z"/>
+        </svg>
+      </div>
+      <h1>HDD Declaration</h1>
+      <p>ACKNOWLEDGE RECEIPT &amp; FILL DETAILS</p>
+      <div class="scan-line"></div>
+    </div>
+
+    <div id="ackContent">
+      <div class="empty">Loading declaration...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ FIREBASE + LOGIC ════════════ -->
 <script>
-// ─────────────────────────────────────────────────────────
-// 🔥 FIREBASE CONFIG
-// ─────────────────────────────────────────────────────────
+// ── FIREBASE CONFIG ──────────────────────────────────────
 const firebaseConfig = {
   apiKey            : "AIzaSyD1e3IjNeMuzsleeCsqVeBrQmd2oKe3fVU",
   authDomain        : "hdd--details.firebaseapp.com",
@@ -540,13 +510,10 @@ const firebaseConfig = {
   appId             : "1:87776310301:web:7aa5f3caadf5627233c2f4",
   measurementId     : "G-3YWF222RCR"
 };
-
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
-// ─────────────────────────────────────────────────────────
-// ADMIN EMAILS — only these get full dashboard
-// ─────────────────────────────────────────────────────────
+// ── ADMIN LIST ───────────────────────────────────────────
 var ADMINS = [
   "aswini@incometax.gov.in",
   "jeevan@incometax.gov.in",
@@ -555,163 +522,486 @@ var ADMINS = [
   "madhukar@incometax.gov.in"
 ];
 
-var currentUser  = "";
-var isAdmin      = false;
-var allTickets   = [];
-var allHdds      = [];
-var activeTicketId = "";
+var currentUser = "";
+var isAdmin     = false;
+var allDecls    = [];
+var allHdds     = [];
+var activeDeclId = "";
+var activeEmailDeclId = "";
 
-// ═══════ LOGIN ═══════════════════════════════════════════
+// ── CHECK URL FOR DECLARATION LINK ──────────────────────
+window.addEventListener('load', function() {
+  var params   = new URLSearchParams(window.location.search);
+  var declId   = params.get('decl');
+  if (declId) {
+    // Someone clicked a declaration link — show ack page directly
+    showAckPage(declId);
+    return;
+  }
+  // Normal login flow
+});
+
+// ── LOGIN ────────────────────────────────────────────────
 function doLogin() {
   var email = document.getElementById('loginEmail').value.trim().toLowerCase();
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showToast('Please enter a valid email.', 'error'); return;
+    showToast('Enter a valid email.','error'); return;
   }
   var btn = document.getElementById('loginBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Signing in...';
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Signing in...';
 
   isAdmin = ADMINS.includes(email);
-
-  db.collection('logins').add({
-    email: email, isAdmin: isAdmin,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(function(){});
-
   currentUser = email;
 
-  if (isAdmin) {
-    document.getElementById('adminEmailDisplay').textContent = email;
-    transitionTo('loginPage', 'adminPage');
-    setTimeout(function(){ loadTickets(); }, 300);
-    showToast('Welcome, Admin ' + email.split('@')[0] + '!', 'success');
-  } else {
-    document.getElementById('userEmailDisplay').textContent = email;
-    transitionTo('loginPage', 'userPage');
-    setTimeout(function(){ loadMyTickets(); }, 300);
-    showToast('Welcome, ' + email.split('@')[0] + '!', 'success');
-  }
+  db.collection('logins').add({ email:email, isAdmin:isAdmin, timestamp:firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){});
 
-  btn.disabled = false; btn.innerHTML = 'Access System';
+  if (isAdmin) {
+    document.getElementById('adminEmail').textContent = email;
+    transitionTo('loginPage','adminPage');
+    setTimeout(loadDeclarations, 300);
+    showToast('Welcome, Admin '+email.split('@')[0]+'!','success');
+  } else {
+    document.getElementById('userEmail').textContent = email;
+    transitionTo('loginPage','userPage');
+    setTimeout(loadMyDeclarations, 300);
+    showToast('Welcome, '+email.split('@')[0]+'!','success');
+  }
+  btn.disabled=false; btn.innerHTML='Access System';
 }
 
-document.getElementById('loginEmail').addEventListener('keydown', function(e) { if(e.key==='Enter') doLogin(); });
+document.getElementById('loginEmail').addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
 
 function doLogout() {
-  currentUser = ''; isAdmin = false;
-  document.getElementById('loginEmail').value = '';
-  if (!document.getElementById('adminPage').classList.contains('hidden'))
-    transitionTo('adminPage', 'loginPage');
-  else
-    transitionTo('userPage', 'loginPage');
-  showToast('Signed out.', 'info');
+  currentUser=''; isAdmin=false;
+  document.getElementById('loginEmail').value='';
+  ['adminPage','userPage','ackPage'].forEach(function(p){
+    if(!document.getElementById(p).classList.contains('hidden')) transitionTo(p,'loginPage');
+  });
+  showToast('Signed out.','info');
 }
 
-// ═══════ PAGE TRANSITIONS ════════════════════════════════
+// ── PAGE TRANSITIONS ─────────────────────────────────────
 function transitionTo(fromId, toId) {
-  var from = document.getElementById(fromId);
-  var to   = document.getElementById(toId);
+  var from=document.getElementById(fromId), to=document.getElementById(toId);
   from.style.opacity='0'; from.style.transform='translateY(-30px)';
   setTimeout(function(){
     from.classList.add('hidden'); to.classList.remove('hidden');
-    setTimeout(function(){ to.style.opacity='1'; to.style.transform='translateY(0)'; }, 50);
-  }, 400);
+    setTimeout(function(){ to.style.opacity='1'; to.style.transform='translateY(0)'; },50);
+  },400);
 }
 
-// ═══════ ADMIN TABS ══════════════════════════════════════
-function adminTab(tab) {
-  ['tickets','hdds','new','date'].forEach(function(t) {
+// ── ADMIN TABS ───────────────────────────────────────────
+function aTab(tab) {
+  ['decl','new','hdds','date'].forEach(function(t){
     document.getElementById('atab-'+t).classList.toggle('active', t===tab);
     document.getElementById('aTab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
   });
-  if (tab==='hdds') loadHdds();
+  if(tab==='hdds') loadHdds();
 }
 
-// ═══════ USER TABS ═══════════════════════════════════════
-function userTab(tab) {
-  ['submit','status'].forEach(function(t){
+function uTab(tab) {
+  ['pending','done'].forEach(function(t){
     document.getElementById('utab-'+t).classList.toggle('active', t===tab);
     document.getElementById('uTab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
   });
-  if (tab==='status') loadMyTickets();
+  if(tab==='done') loadDoneDeclarations();
 }
 
-// ═══════ SERIAL TAG HELPERS ══════════════════════════════
-function makeTagsFn(inputId, tagsId, badgeId) {
-  return function() {
-    var raw = document.getElementById(inputId).value;
-    var serials = raw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
-    document.getElementById(tagsId).innerHTML = serials.map(function(s){
-      return '<div class="stag">'+s+'<button onclick="rmS(\''+s+'\',\''+inputId+'\',\''+tagsId+'\',\''+badgeId+'\')">×</button></div>';
-    }).join('');
-    var b=document.getElementById(badgeId);
-    b.style.display=serials.length?'inline-flex':'none'; b.textContent=serials.length;
-  };
+// ── SERIAL TAGS ──────────────────────────────────────────
+function updateIssueSerials() {
+  var raw = document.getElementById('issueSerialInput').value;
+  var serials = raw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+  document.getElementById('issueSerialTags').innerHTML = serials.map(function(s){
+    return '<div class="stag">'+s+'<button onclick="rmIS(\''+s+'\')">×</button></div>';
+  }).join('');
+  var b=document.getElementById('issueSerialCount');
+  b.style.display=serials.length?'inline-flex':'none'; b.textContent=serials.length;
+  document.getElementById('issueQty').value = serials.length || '';
 }
-var updateASerialTags = makeTagsFn('aSerialInput','aSerialTags','aSerialCount');
-var updateADateTags   = makeTagsFn('aDateSerial','aDateTags','_none');
-var updateUSerialTags = makeTagsFn('uSerialInput','uSerialTags','uSerialCount');
-function rmS(serial, inputId, tagsId, badgeId) {
-  var inp=document.getElementById(inputId);
+
+function rmIS(serial) {
+  var inp=document.getElementById('issueSerialInput');
   inp.value=inp.value.split(',').map(function(s){return s.trim();}).filter(function(s){return s.toUpperCase()!==serial;}).join(', ');
-  if(inputId==='aSerialInput') updateASerialTags();
-  else if(inputId==='aDateSerial') updateADateTags();
-  else if(inputId==='uSerialInput') updateUSerialTags();
+  updateIssueSerials();
 }
 
-// ═══════ PURPOSE ═════════════════════════════════════════
-function selPurpose(el,val){document.querySelectorAll('#aTabNew .pill').forEach(function(p){p.classList.remove('active');});el.classList.add('active');document.getElementById('aPurpose').value=val;}
-function selUPurpose(el,val){document.querySelectorAll('#uTabSubmit .pill').forEach(function(p){p.classList.remove('active');});el.classList.add('active');document.getElementById('uPurpose').value=val;}
+function updateADateTags() {
+  var raw=document.getElementById('aDateSerial').value;
+  var serials=raw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+  document.getElementById('aDateTags').innerHTML=serials.map(function(s){
+    return '<div class="stag" style="border-color:rgba(255,179,71,.3);color:var(--warn);">'+s+'</div>';
+  }).join('');
+}
 
-// ═══════ ADMIN: SAVE HDD ═════════════════════════════════
-function adminSaveHdd() {
-  var serialRaw = document.getElementById('aSerialInput').value.trim();
-  if (!serialRaw) { showToast('Enter at least one Serial Number.', 'error'); return; }
+// ── CREATE DECLARATION ───────────────────────────────────
+function createDeclaration() {
+  var empEmail = document.getElementById('issueEmail').value.trim().toLowerCase();
+  var empName  = document.getElementById('issueName').value.trim();
+  var serialRaw= document.getElementById('issueSerialInput').value.trim();
+  var size     = document.getElementById('issueSize').value;
+  var date     = document.getElementById('issueDate').value;
+  var note     = document.getElementById('issueAdminNote').value.trim();
+
+  if (!empEmail) { showToast('Enter employee email.','error'); return; }
+  if (!serialRaw){ showToast('Enter serial numbers.','error'); return; }
+
   var serials = serialRaw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+  if (!serials.length) { showToast('No valid serials.','error'); return; }
 
-  var btn = document.getElementById('aSubmitBtn');
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Saving...';
+  var btn=document.getElementById('issuBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Creating...';
 
-  var usedDate = document.getElementById('aUsedDate').value;
-  var batch = db.batch();
-  var now = firebase.firestore.FieldValue.serverTimestamp();
+  var declId = 'DCL-'+Date.now().toString(36).toUpperCase();
+  var baseURL = window.location.origin + window.location.pathname;
+  var declLink = baseURL + '?decl=' + declId;
 
-  serials.forEach(function(serial) {
-    var ref = db.collection('hdds').doc(serial);
-    var data = {
-      serialNumber:serial, size:document.getElementById('aHddSize').value,
-      department:document.getElementById('aDept').value.trim(),
-      deptLocation:document.getElementById('aDeptLoc').value.trim(),
-      examiner:document.getElementById('aExaminer').value.trim(),
-      purpose:document.getElementById('aPurpose').value,
-      storageLocation:document.getElementById('aStoreLoc').value.trim(),
-      note:document.getElementById('aNote').value.trim(),
-      status:usedDate?'Used':'Not Used',
-      updatedAt:now, lastUpdatedBy:currentUser
-    };
-    if(usedDate) data.usedDate=usedDate;
-    batch.set(ref, data, {merge:true});
-  });
-
-  batch.commit()
-  .then(function(){ showToast('Saved '+serials.length+' record(s)!','success'); resetAdminForm(); })
+  db.collection('declarations').doc(declId).set({
+    declId        : declId,
+    employeeEmail : empEmail,
+    employeeName  : empName,
+    serials       : serials,
+    serialsStr    : serials.join(', '),
+    quantity      : serials.length,
+    size          : size,
+    transferDate  : date,
+    adminNote     : note,
+    issuedBy      : currentUser,
+    declLink      : declLink,
+    status        : 'pending',
+    createdAt     : firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt     : firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(function() {
+    showToast('Declaration '+declId+' created!','success');
+    // Open email modal
+    openEmailModal(declId, empEmail, empName, serials, declLink);
+    resetIssueForm();
+    loadDeclarations();
+  })
   .catch(function(err){ showToast('Error: '+err.message,'error'); })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='💾 Save to Database'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='📋 Create Declaration &amp; Generate Link'; });
 }
 
-// ═══════ ADMIN: UPDATE USED DATE ═════════════════════════
+// ── EMAIL MODAL ──────────────────────────────────────────
+function openEmailModal(declId, empEmail, empName, serials, link) {
+  activeEmailDeclId = declId;
+  document.getElementById('emailModalInfo').textContent = declId + ' — ' + serials.length + ' HDD(s) — ' + (empName||empEmail);
+  document.getElementById('emailModalLink').textContent = link;
+  document.getElementById('emailTo').value = empEmail;
+  document.getElementById('emailSubject').value = 'HDD Declaration ' + declId + ' — Please Acknowledge Receipt';
+  document.getElementById('emailBody').value =
+    'Dear ' + (empName || 'Employee') + ',\n\n' +
+    'This is to inform you that ' + serials.length + ' HDD(s) have been issued to you.\n\n' +
+    'Serial Numbers: ' + serials.join(', ') + '\n\n' +
+    'Please click the link below to acknowledge receipt and fill in the required details:\n\n' +
+    link + '\n\n' +
+    'Regards,\nDigital Evidence Unit\nIncome Tax Department';
+  document.getElementById('emailModal').classList.add('show');
+}
+
+function closeEmailModal() {
+  document.getElementById('emailModal').classList.remove('show');
+  activeEmailDeclId = '';
+}
+
+function copyDeclLink() {
+  var link = document.getElementById('emailModalLink').textContent;
+  navigator.clipboard.writeText(link).then(function(){
+    showToast('Link copied to clipboard!','success');
+  }).catch(function(){
+    showToast('Copy failed — please copy manually.','warn');
+  });
+}
+
+function sendEmail() {
+  var to      = document.getElementById('emailTo').value.trim();
+  var subject = document.getElementById('emailSubject').value.trim();
+  var body    = document.getElementById('emailBody').value.trim();
+
+  if (!to) { showToast('Enter recipient email.','error'); return; }
+
+  // Open default email client
+  var mailtoLink = 'mailto:' + to +
+    '?subject=' + encodeURIComponent(subject) +
+    '&body='    + encodeURIComponent(body);
+  window.open(mailtoLink, '_blank');
+
+  // Update declaration status to sent
+  if (activeEmailDeclId) {
+    db.collection('declarations').doc(activeEmailDeclId).update({
+      status    : 'sent',
+      sentAt    : firebase.firestore.FieldValue.serverTimestamp(),
+      sentTo    : to
+    }).then(function(){
+      showToast('Status updated to Sent!','success');
+      loadDeclarations();
+    });
+  }
+  closeEmailModal();
+}
+
+// ── LOAD DECLARATIONS (ADMIN) ────────────────────────────
+function loadDeclarations() {
+  document.getElementById('declList').innerHTML='<div class="empty">Loading...</div>';
+  db.collection('declarations').orderBy('createdAt','desc').get()
+  .then(function(snap){
+    allDecls=[];
+    snap.forEach(function(doc){ allDecls.push(Object.assign({id:doc.id},doc.data())); });
+    updateDeclStats();
+    renderDecls(allDecls);
+  })
+  .catch(function(err){ document.getElementById('declList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; });
+}
+
+function updateDeclStats() {
+  var p=0,s=0,a=0;
+  allDecls.forEach(function(d){
+    if(d.status==='pending')      p++;
+    else if(d.status==='sent')    s++;
+    else if(d.status==='acknowledged'||d.status==='completed') a++;
+  });
+  document.getElementById('dStatPending').textContent = p;
+  document.getElementById('dStatSent').textContent    = s;
+  document.getElementById('dStatAck').textContent     = a;
+  document.getElementById('dStatTotal').textContent   = allDecls.length;
+}
+
+function filterDecls() {
+  var q=document.getElementById('declSearch').value.toLowerCase();
+  var st=document.getElementById('declStatusFilter').value;
+  renderDecls(allDecls.filter(function(d){
+    var mQ=!q||(d.employeeEmail||'').includes(q)||(d.serialsStr||'').toLowerCase().includes(q)||(d.employeeName||'').toLowerCase().includes(q)||(d.declId||'').toLowerCase().includes(q);
+    return mQ && (!st||d.status===st);
+  }));
+}
+
+function renderDecls(decls) {
+  var el=document.getElementById('declList');
+  if(!decls.length){ el.innerHTML='<div class="empty">No declarations found.</div>'; return; }
+  el.innerHTML=decls.map(function(d){
+    var date=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleDateString('en-IN'):'—';
+    var ackDate=d.acknowledgedAt&&d.acknowledgedAt.toDate?d.acknowledgedAt.toDate().toLocaleDateString('en-IN'):'—';
+    return '<div class="decl-card '+d.status+'">'+
+      '<div class="decl-header">'+
+        '<span class="decl-id">'+d.declId+'</span>'+
+        sDeclBadge(d.status)+
+      '</div>'+
+      '<div class="decl-serials">💾 '+(d.serialsStr||'—')+'</div>'+
+      '<div class="decl-meta">'+
+        '<span>👤 '+(d.employeeName||d.employeeEmail||'—')+'</span>'+
+        '<span>📧 '+(d.employeeEmail||'—')+'</span>'+
+        '<span>📦 Qty: '+(d.quantity||'—')+' | '+(d.size||'—')+'</span>'+
+        '<span>📅 Issued: '+date+'</span>'+
+        (d.acknowledgedAt?'<span style="color:var(--success);">✅ Ack: '+ackDate+'</span>':'')+
+      '</div>'+
+      (d.adminNote?'<div style="font-size:.8rem;color:var(--muted);margin-bottom:5px;">📝 '+d.adminNote+'</div>':'')+
+      (d.employeeDetails?renderEmpDetails(d.employeeDetails):'<div style="font-size:.76rem;color:var(--muted);margin-top:4px;font-family:\'Share Tech Mono\',monospace;">Employee details not filled yet.</div>')+
+      '<div class="action-row">'+
+        '<button class="btn btn-sm btn-copy" onclick="openEmailModal(\''+d.id+'\',\''+d.employeeEmail+'\',\''+d.employeeName+'\','+JSON.stringify(d.serials)+',\''+d.declLink+'\')">📧 Resend Link</button>'+
+        '<button class="btn-copy btn-sm" onclick="navigator.clipboard.writeText(\''+d.declLink+'\').then(function(){showToast(\'Link copied!\',\'success\')})">📋 Copy Link</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderEmpDetails(det) {
+  return '<div style="background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.15);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.8rem;">'+
+    '<div style="font-family:\'Share Tech Mono\',monospace;font-size:.68rem;color:var(--success);letter-spacing:1px;margin-bottom:6px;">✅ EMPLOYEE DETAILS</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);">'+
+    (det.usedDate?'<span>📅 '+det.usedDate+'</span>':'')+
+    (det.department?'<span>🏢 '+det.department+'</span>':'')+
+    (det.deptLocation?'<span>📍 '+det.deptLocation+'</span>':'')+
+    (det.examinerName?'<span>👤 '+det.examinerName+'</span>':'')+
+    (det.purpose?'<span>🎯 '+det.purpose+'</span>':'')+
+    (det.note?'<span>📝 '+det.note+'</span>':'')+
+    '</div></div>';
+}
+
+function sDeclBadge(status) {
+  var map={pending:'<span class="sbadge s-pending">⏳ Pending</span>',sent:'<span class="sbadge s-sent">📧 Link Sent</span>',acknowledged:'<span class="sbadge s-acknowledged">✅ Acknowledged</span>',completed:'<span class="sbadge s-completed">✔️ Completed</span>'};
+  return map[status]||'<span class="sbadge">'+status+'</span>';
+}
+
+// ── EMPLOYEE: LOAD MY DECLARATIONS ──────────────────────
+function loadMyDeclarations() {
+  document.getElementById('pendingDeclList').innerHTML='<div class="empty">Loading...</div>';
+  db.collection('declarations').where('employeeEmail','==',currentUser).where('status','in',['pending','sent']).orderBy('createdAt','desc').get()
+  .then(function(snap){
+    var decls=[];
+    snap.forEach(function(doc){ decls.push(Object.assign({id:doc.id},doc.data())); });
+    if(!decls.length){ document.getElementById('pendingDeclList').innerHTML='<div class="empty">No pending declarations.<br>You will receive an email when an HDD is issued to you.</div>'; return; }
+    document.getElementById('pendingDeclList').innerHTML = decls.map(function(d){
+      return '<div class="decl-card '+d.status+'">'+
+        '<div class="decl-header"><span class="decl-id">'+d.declId+'</span>'+sDeclBadge(d.status)+'</div>'+
+        '<div class="decl-serials">💾 '+(d.serialsStr||'—')+'</div>'+
+        '<div class="decl-meta"><span>📦 Qty: '+(d.quantity||'—')+' | '+(d.size||'—')+'</span><span>👤 Issued by: '+(d.issuedBy||'—')+'</span></div>'+
+        (d.adminNote?'<div style="background:rgba(180,144,232,.06);border:1px solid rgba(180,144,232,.2);border-radius:7px;padding:9px 11px;font-size:.8rem;color:var(--admin);margin-top:6px;">💬 '+d.adminNote+'</div>':'')+
+        '<div class="action-row">'+
+          '<button class="btn btn-success btn-sm" onclick="showAckForm(\''+d.id+'\')">✅ Acknowledge &amp; Fill Details</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  });
+}
+
+function loadDoneDeclarations() {
+  document.getElementById('doneDeclList').innerHTML='<div class="empty">Loading...</div>';
+  db.collection('declarations').where('employeeEmail','==',currentUser).where('status','in',['acknowledged','completed']).orderBy('createdAt','desc').get()
+  .then(function(snap){
+    var decls=[];
+    snap.forEach(function(doc){ decls.push(Object.assign({id:doc.id},doc.data())); });
+    if(!decls.length){ document.getElementById('doneDeclList').innerHTML='<div class="empty">No completed declarations yet.</div>'; return; }
+    document.getElementById('doneDeclList').innerHTML = decls.map(function(d){
+      return '<div class="decl-card acknowledged">'+
+        '<div class="decl-header"><span class="decl-id">'+d.declId+'</span>'+sDeclBadge(d.status)+'</div>'+
+        '<div class="decl-serials">💾 '+(d.serialsStr||'—')+'</div>'+
+        '<div class="decl-meta"><span>📦 Qty: '+(d.quantity||'—')+'</span><span>✅ Acknowledged</span></div>'+
+        (d.employeeDetails?renderEmpDetails(d.employeeDetails):'')+
+      '</div>';
+    }).join('');
+  });
+}
+
+// ── ACKNOWLEDGE PAGE (via link) ──────────────────────────
+function showAckPage(declId) {
+  // Hide login, show ack page directly
+  document.getElementById('loginPage').classList.add('hidden');
+  document.getElementById('ackPage').classList.remove('hidden');
+  document.getElementById('ackPage').style.opacity='1';
+  document.getElementById('ackPage').style.transform='translateY(0)';
+
+  db.collection('declarations').doc(declId).get()
+  .then(function(doc){
+    if(!doc.exists){ document.getElementById('ackContent').innerHTML='<div class="empty">Declaration not found.</div>'; return; }
+    var d = Object.assign({id:doc.id}, doc.data());
+    activeDeclId = declId;
+    renderAckForm(d);
+  })
+  .catch(function(err){ document.getElementById('ackContent').innerHTML='<div class="empty">Error: '+err.message+'</div>'; });
+}
+
+function showAckForm(declId) {
+  activeDeclId = declId;
+  db.collection('declarations').doc(declId).get()
+  .then(function(doc){
+    if(!doc.exists) return;
+    var d=Object.assign({id:doc.id},doc.data());
+    transitionTo('userPage','ackPage');
+    renderAckForm(d);
+  });
+}
+
+function renderAckForm(d) {
+  var alreadyAck = d.status==='acknowledged'||d.status==='completed';
+  document.getElementById('ackContent').innerHTML =
+    '<div class="ack-box">'+
+      '<div style="font-family:\'Share Tech Mono\',monospace;font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">DECLARATION</div>'+
+      '<div style="font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:2px;margin-bottom:8px;">'+d.declId+'</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:8px;font-size:.82rem;color:var(--muted);margin-bottom:10px;">'+
+        '<span>📦 Qty: '+(d.quantity||'—')+'</span>'+
+        '<span>💾 Size: '+(d.size||'—')+'</span>'+
+        '<span>📅 Transfer Date: '+(d.transferDate||'—')+'</span>'+
+        '<span>👤 Issued by: '+(d.issuedBy||'—')+'</span>'+
+      '</div>'+
+      '<div style="font-family:\'Share Tech Mono\',monospace;font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">SERIAL NUMBERS</div>'+
+      '<div class="ack-serial-list">'+
+        (d.serials||[]).map(function(s){ return '<div class="ack-serial">'+s+'</div>'; }).join('')+
+      '</div>'+
+      (d.adminNote?'<div style="background:rgba(180,144,232,.06);border:1px solid rgba(180,144,232,.2);border-radius:7px;padding:9px 11px;font-size:.8rem;color:var(--admin);margin-top:8px;">💬 Admin note: '+d.adminNote+'</div>':'')+
+    '</div>'+
+    (alreadyAck
+      ? '<div style="text-align:center;padding:24px;font-family:\'Share Tech Mono\',monospace;font-size:.82rem;color:var(--success);">✅ You have already acknowledged this declaration.</div>'+(d.employeeDetails?renderEmpDetails(d.employeeDetails):'')
+      : '<div class="fc" id="ackForm">'+
+          '<div style="font-size:.72rem;font-family:\'Share Tech Mono\',monospace;color:var(--muted);margin-bottom:14px;line-height:1.7;">By submitting this form, you confirm receipt of the above HDDs and agree to use them for official purposes only.</div>'+
+          '<div class="fg"><label>Your Name</label><input type="text" id="ackName" placeholder="Your full name"></div>'+
+          '<div class="fg"><label>Used Date <span class="opt">/ optional</span></label><input type="date" id="ackUsedDate"><div class="hint">Leave empty if HDD not yet used</div></div>'+
+          '<div class="grid-2 fg"><div><label>Department <span class="opt">/ optional</span></label><input type="text" id="ackDept" placeholder="e.g. CT, CC"></div><div><label>Location <span class="opt">/ optional</span></label><input type="text" id="ackDeptLoc" placeholder="e.g. Blr"></div></div>'+
+          '<hr class="divider" data-label="Purpose">'+
+          '<div class="fg"><label>Purpose <span class="opt">/ optional</span></label><div class="pills" id="ackPills"><div class="pill" onclick="selAckP(this,\'Action\')">Action</div><div class="pill" onclick="selAckP(this,\'Extraction\')">Extraction</div><div class="pill" onclick="selAckP(this,\'Cloning\')">Cloning</div><div class="pill" onclick="selAckP(this,\'Analysis\')">Analysis</div><div class="pill" onclick="selAckP(this,\'Other\')">Other</div></div><input type="hidden" id="ackPurpose"></div>'+
+          '<div class="fg"><label>Note <span class="opt">/ optional</span></label><textarea id="ackNote" placeholder="Any remarks..."></textarea></div>'+
+          '<div class="fg"><button class="btn btn-success" id="ackBtn" onclick="submitAck()">✅ Acknowledge Receipt &amp; Submit</button></div>'+
+        '</div>'
+    );
+}
+
+function selAckP(el,val){
+  document.querySelectorAll('#ackPills .pill').forEach(function(p){p.classList.remove('active');});
+  el.classList.add('active'); document.getElementById('ackPurpose').value=val;
+}
+
+// ── SUBMIT ACKNOWLEDGEMENT ───────────────────────────────
+function submitAck() {
+  if(!activeDeclId){ showToast('No active declaration.','error'); return; }
+
+  var name    = document.getElementById('ackName').value.trim();
+  var usedDate= document.getElementById('ackUsedDate').value;
+  var dept    = document.getElementById('ackDept').value.trim();
+  var deptLoc = document.getElementById('ackDeptLoc').value.trim();
+  var purpose = document.getElementById('ackPurpose').value;
+  var note    = document.getElementById('ackNote').value.trim();
+
+  var btn=document.getElementById('ackBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Submitting...';
+
+  var details = { examinerName:name, usedDate:usedDate, department:dept, deptLocation:deptLoc, purpose:purpose, note:note };
+
+  // Update declaration
+  db.collection('declarations').doc(activeDeclId).update({
+    status          : 'acknowledged',
+    employeeDetails : details,
+    acknowledgedAt  : firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt       : firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(function(){
+    // Also update HDD records in hdds collection
+    return db.collection('declarations').doc(activeDeclId).get();
+  })
+  .then(function(doc){
+    var d = doc.data();
+    var batch = db.batch();
+    var now = firebase.firestore.FieldValue.serverTimestamp();
+    (d.serials||[]).forEach(function(serial){
+      var ref=db.collection('hdds').doc(serial);
+      var data={
+        serialNumber:serial, size:d.size||'',
+        department:dept, deptLocation:deptLoc,
+        examiner:name, purpose:purpose, note:note,
+        status:usedDate?'Used':'Not Used',
+        issuedTo:d.employeeEmail, declId:activeDeclId,
+        updatedAt:now, lastUpdatedBy:d.employeeEmail
+      };
+      if(usedDate) data.usedDate=usedDate;
+      batch.set(ref, data, {merge:true});
+    });
+    return batch.commit();
+  })
+  .then(function(){
+    showToast('Acknowledged successfully!','success');
+    document.getElementById('ackContent').innerHTML =
+      '<div style="text-align:center;padding:40px 20px;">'+
+        '<div style="width:80px;height:80px;border-radius:50%;border:3px solid var(--success);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 0 30px rgba(0,229,160,.4);">'+
+          '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'+
+        '</div>'+
+        '<div style="font-size:1.4rem;font-weight:700;letter-spacing:2px;color:var(--success);text-transform:uppercase;margin-bottom:8px;">Acknowledged!</div>'+
+        '<div style="font-family:\'Share Tech Mono\',monospace;font-size:.78rem;color:var(--muted);line-height:1.8;">Your acknowledgement has been recorded.<br>The HDD records have been updated.<br>Thank you.</div>'+
+      '</div>';
+  })
+  .catch(function(err){ showToast('Error: '+err.message,'error'); })
+  .finally(function(){ btn.disabled=false; btn.innerHTML='✅ Acknowledge Receipt &amp; Submit'; });
+}
+
+// ── ADMIN: UPDATE USED DATE ──────────────────────────────
 function adminUpdateDate() {
-  var serialRaw = document.getElementById('aDateSerial').value.trim();
-  var usedDate  = document.getElementById('aUpdateDate').value;
+  var serialRaw=document.getElementById('aDateSerial').value.trim();
+  var usedDate=document.getElementById('aUpdateDate').value;
   if(!serialRaw){ showToast('Enter serial numbers.','error'); return; }
   if(!usedDate) { showToast('Pick a Used Date.','error'); return; }
-  var serials = serialRaw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
-
+  var serials=serialRaw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
   var btn=document.getElementById('aDateBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Updating...';
-
   var batch=db.batch(); var now=firebase.firestore.FieldValue.serverTimestamp();
   serials.forEach(function(s){
-    batch.set(db.collection('hdds').doc(s), {usedDate:usedDate,status:'Used',updatedAt:now,lastUpdatedBy:currentUser},{merge:true});
+    batch.set(db.collection('hdds').doc(s),{usedDate:usedDate,status:'Used',updatedAt:now,lastUpdatedBy:currentUser},{merge:true});
   });
   batch.commit()
   .then(function(){ showToast('Updated '+serials.length+' record(s)!','success'); document.getElementById('aDateSerial').value=''; document.getElementById('aUpdateDate').value=''; document.getElementById('aDateTags').innerHTML=''; })
@@ -719,186 +1009,9 @@ function adminUpdateDate() {
   .finally(function(){ btn.disabled=false; btn.innerHTML='📅 Update Used Date'; });
 }
 
-// ═══════ USER: SUBMIT TICKET ═════════════════════════════
-function submitTicket() {
-  var serialRaw = document.getElementById('uSerialInput').value.trim();
-  if (!serialRaw) { showToast('Enter at least one Serial Number.', 'error'); return; }
-  var serials = serialRaw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
-
-  var btn=document.getElementById('uSubmitBtn');
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Submitting...';
-
-  var ticketId = 'TKT-' + Date.now().toString(36).toUpperCase();
-
-  db.collection('tickets').doc(ticketId).set({
-    ticketId      : ticketId,
-    submittedBy   : currentUser,
-    serials       : serials,
-    serialsStr    : serials.join(', '),
-    requestedDate : document.getElementById('uUsedDate').value,
-    department    : document.getElementById('uDept').value.trim(),
-    deptLocation  : document.getElementById('uDeptLoc').value.trim(),
-    examinerName  : document.getElementById('uExaminer').value.trim(),
-    purpose       : document.getElementById('uPurpose').value,
-    note          : document.getElementById('uNote').value.trim(),
-    status        : 'pending',
-    adminNote     : '',
-    createdAt     : firebase.firestore.FieldValue.serverTimestamp(),
-    updatedAt     : firebase.firestore.FieldValue.serverTimestamp()
-  })
-  .then(function(){
-    showToast('Ticket '+ticketId+' submitted!','success');
-    resetUserForm();
-    userTab('status');
-  })
-  .catch(function(err){ showToast('Error: '+err.message,'error'); })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='🎫 Submit Request'; });
-}
-
-// ═══════ ADMIN: LOAD TICKETS ═════════════════════════════
-function loadTickets() {
-  document.getElementById('ticketsList').innerHTML = '<div class="empty">Loading...</div>';
-  db.collection('tickets').orderBy('createdAt','desc').get()
-  .then(function(snap) {
-    allTickets=[];
-    snap.forEach(function(doc){ allTickets.push(Object.assign({id:doc.id},doc.data())); });
-    updateTicketStats();
-    renderTickets(allTickets);
-  })
-  .catch(function(err){ document.getElementById('ticketsList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; });
-}
-
-function updateTicketStats() {
-  var pending=0,approved=0,rejected=0,completed=0;
-  allTickets.forEach(function(t){
-    if(t.status==='pending')completed; // just count
-    if(t.status==='pending')   pending++;
-    if(t.status==='approved')  approved++;
-    if(t.status==='rejected')  rejected++;
-    if(t.status==='completed') completed++;
-  });
-  document.getElementById('aStatPending').textContent   = pending;
-  document.getElementById('aStatApproved').textContent  = approved;
-  document.getElementById('aStatRejected').textContent  = rejected;
-  document.getElementById('aStatCompleted').textContent = completed;
-  document.getElementById('aStatTotal').textContent     = allTickets.length;
-}
-
-function filterTickets() {
-  var q  = document.getElementById('ticketSearch').value.toLowerCase();
-  var st = document.getElementById('ticketStatusFilter').value;
-  var filtered = allTickets.filter(function(t){
-    var matchQ  = !q || (t.submittedBy||'').includes(q)||(t.serialsStr||'').toLowerCase().includes(q)||(t.department||'').toLowerCase().includes(q)||(t.examinerName||'').toLowerCase().includes(q);
-    var matchSt = !st || t.status===st;
-    return matchQ && matchSt;
-  });
-  renderTickets(filtered);
-}
-
-function renderTickets(tickets) {
-  var el = document.getElementById('ticketsList');
-  if(!tickets.length){ el.innerHTML='<div class="empty">No tickets found.</div>'; return; }
-  el.innerHTML = tickets.map(function(t){
-    var sBadge = statusBadge(t.status);
-    var date = t.createdAt && t.createdAt.toDate ? t.createdAt.toDate().toLocaleDateString('en-IN') : '—';
-    return '<div class="ticket-card '+t.status+'">'+
-      '<div class="ticket-header">'+
-        '<span class="tnum">'+t.ticketId+'</span>'+
-        sBadge+
-      '</div>'+
-      '<div class="ticket-serials">💾 '+( t.serialsStr||'—')+'</div>'+
-      '<div class="ticket-meta">'+
-        '<span>👤 '+(t.submittedBy||'—')+'</span>'+
-        '<span>📅 '+(t.requestedDate||'No date')+'</span>'+
-        '<span>🏢 '+(t.department||'—')+' / '+(t.deptLocation||'—')+'</span>'+
-        '<span>🔬 '+(t.examinerName||'—')+'</span>'+
-        '<span>🎯 '+(t.purpose||'—')+'</span>'+
-        '<span style="color:var(--muted);font-size:0.75rem;">Submitted: '+date+'</span>'+
-      '</div>'+
-      (t.note ? '<div style="font-size:0.82rem;color:var(--muted);margin-bottom:6px;">📝 '+t.note+'</div>' : '')+
-      (t.adminNote ? '<div class="admin-note">💬 Admin: '+t.adminNote+'</div>' : '')+
-      '<div class="action-row">'+
-        '<button class="btn btn-sm btn-admin" onclick="openModal(\''+t.id+'\')">✏️ Update</button>'+
-        (t.status==='approved' ? '<button class="btn btn-sm btn-success" onclick="markCompleted(\''+t.id+'\')">✔️ Mark Completed</button>' : '')+
-      '</div>'+
-    '</div>';
-  }).join('');
-}
-
-// ═══════ ADMIN: TICKET MODAL ═════════════════════════════
-function openModal(ticketId) {
-  activeTicketId = ticketId;
-  var t = allTickets.find(function(x){return x.id===ticketId;});
-  if(!t) return;
-  document.getElementById('modalTicketInfo').textContent = t.ticketId + ' — ' + (t.serialsStr||'') + ' — ' + (t.submittedBy||'');
-  document.getElementById('modalStatus').value = t.status || 'pending';
-  document.getElementById('modalNote').value   = t.adminNote || '';
-  document.getElementById('noteModal').classList.add('show');
-}
-
-function closeModal() { document.getElementById('noteModal').classList.remove('show'); activeTicketId=''; }
-
-function saveTicketUpdate() {
-  if(!activeTicketId) return;
-  var status    = document.getElementById('modalStatus').value;
-  var adminNote = document.getElementById('modalNote').value.trim();
-
-  db.collection('tickets').doc(activeTicketId).update({
-    status    : status,
-    adminNote : adminNote,
-    updatedBy : currentUser,
-    updatedAt : firebase.firestore.FieldValue.serverTimestamp()
-  })
-  .then(function(){
-    showToast('Ticket updated!', 'success');
-    closeModal();
-    loadTickets();
-  })
-  .catch(function(err){ showToast('Error: '+err.message,'error'); });
-}
-
-function markCompleted(ticketId) {
-  db.collection('tickets').doc(ticketId).update({
-    status:'completed', updatedBy:currentUser,
-    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-  })
-  .then(function(){ showToast('Marked as completed!','success'); loadTickets(); })
-  .catch(function(err){ showToast('Error: '+err.message,'error'); });
-}
-
-// ═══════ USER: LOAD MY TICKETS ═══════════════════════════
-function loadMyTickets() {
-  document.getElementById('myTicketsList').innerHTML='<div class="empty">Loading your tickets...</div>';
-  db.collection('tickets').where('submittedBy','==',currentUser).orderBy('createdAt','desc').get()
-  .then(function(snap){
-    var tickets=[];
-    snap.forEach(function(doc){ tickets.push(Object.assign({id:doc.id},doc.data())); });
-    if(!tickets.length){ document.getElementById('myTicketsList').innerHTML='<div class="empty">No tickets yet. Submit a request!</div>'; return; }
-    document.getElementById('myTicketsList').innerHTML = tickets.map(function(t){
-      var date = t.createdAt && t.createdAt.toDate ? t.createdAt.toDate().toLocaleDateString('en-IN') : '—';
-      return '<div class="ticket-card '+t.status+'">'+
-        '<div class="ticket-header">'+
-          '<span class="tnum">'+t.ticketId+'</span>'+
-          statusBadge(t.status)+
-        '</div>'+
-        '<div class="ticket-serials">💾 '+(t.serialsStr||'—')+'</div>'+
-        '<div class="ticket-meta">'+
-          '<span>📅 '+(t.requestedDate||'No date')+'</span>'+
-          '<span>🏢 '+(t.department||'—')+' / '+(t.deptLocation||'—')+'</span>'+
-          '<span>🎯 '+(t.purpose||'—')+'</span>'+
-          '<span style="color:var(--muted);font-size:0.75rem;">Submitted: '+date+'</span>'+
-        '</div>'+
-        (t.note ? '<div style="font-size:0.82rem;color:var(--muted);">📝 Your note: '+t.note+'</div>' : '')+
-        (t.adminNote ? '<div class="admin-note">💬 Admin response: '+t.adminNote+'</div>' : '<div style="font-size:0.78rem;color:var(--muted);margin-top:6px;font-family:\'Share Tech Mono\',monospace;">No admin response yet.</div>')+
-      '</div>';
-    }).join('');
-  })
-  .catch(function(err){ document.getElementById('myTicketsList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; });
-}
-
-// ═══════ ADMIN: HDD RECORDS ══════════════════════════════
+// ── ADMIN: HDD RECORDS ───────────────────────────────────
 function loadHdds() {
-  document.getElementById('hddTableBody').innerHTML='<tr><td colspan="9"><div class="empty">Loading...</div></td></tr>';
+  document.getElementById('hddTbody').innerHTML='<tr><td colspan="8"><div class="empty">Loading...</div></td></tr>';
   db.collection('hdds').orderBy('updatedAt','desc').get()
   .then(function(snap){
     allHdds=[];
@@ -906,314 +1019,71 @@ function loadHdds() {
     var used=allHdds.filter(function(r){return r.status==='Used';}).length;
     var tb1=allHdds.filter(function(r){return r.size==='1 TB';}).length;
     var tb2=allHdds.filter(function(r){return r.size==='2 TB';}).length;
-    document.getElementById('hStatTotal').textContent  = allHdds.length;
-    document.getElementById('hStatUsed').textContent   = used;
-    document.getElementById('hStatUnused').textContent = allHdds.length-used;
-    document.getElementById('hStat1tb').textContent    = tb1;
-    document.getElementById('hStat2tb').textContent    = tb2;
+    document.getElementById('hStatTotal').textContent=allHdds.length;
+    document.getElementById('hStatUsed').textContent=used;
+    document.getElementById('hStatUnused').textContent=allHdds.length-used;
+    document.getElementById('hStat1tb').textContent=tb1;
+    document.getElementById('hStat2tb').textContent=tb2;
     renderHdds(allHdds);
   });
 }
 
 function filterHdds() {
-  var q=document.getElementById('hddSearch').value.toLowerCase();
-  var sz=document.getElementById('hddSizeFilter').value;
-  var st=document.getElementById('hddStatusFilter').value;
+  var q=document.getElementById('hSearch').value.toLowerCase();
+  var sz=document.getElementById('hSizeF').value;
+  var st=document.getElementById('hStatF').value;
   renderHdds(allHdds.filter(function(r){
-    var mQ=!q||(r.serialNumber||'').toLowerCase().includes(q)||(r.examiner||'').toLowerCase().includes(q)||(r.department||'').toLowerCase().includes(q);
-    return mQ && (!sz||r.size===sz) && (!st||r.status===st);
+    var mQ=!q||(r.serialNumber||'').toLowerCase().includes(q)||(r.examiner||'').toLowerCase().includes(q)||(r.department||'').toLowerCase().includes(q)||(r.issuedTo||'').toLowerCase().includes(q);
+    return mQ&&(!sz||r.size===sz)&&(!st||r.status===st);
   }));
 }
 
 function renderHdds(records) {
-  var tbody=document.getElementById('hddTableBody');
-  document.getElementById('hddCount').textContent='Showing '+records.length+' of '+allHdds.length+' records';
-  if(!records.length){ tbody.innerHTML='<tr><td colspan="9"><div class="empty">No records.</div></td></tr>'; return; }
-  tbody.innerHTML=records.map(function(r,i){
-    var szB=r.size==='1 TB'?'<span style="background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.2);border-radius:5px;padding:2px 8px;font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;color:var(--accent);">1 TB</span>':r.size==='2 TB'?'<span style="background:rgba(123,94,167,0.15);border:1px solid rgba(123,94,167,0.3);border-radius:5px;padding:2px 8px;font-family:\'Share Tech Mono\',monospace;font-size:0.7rem;color:#b490e8;">2 TB</span>':r.size||'—';
-    var stB=r.status==='Used'?'<span class="status-badge s-used">● Used</span>':'<span class="status-badge s-unused">○ Not Used</span>';
-    return '<tr><td style="color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:0.73rem;">'+(i+1)+'</td><td style="font-family:\'Share Tech Mono\',monospace;font-size:0.8rem;color:var(--accent);">'+(r.serialNumber||'—')+'</td><td>'+szB+'</td><td>'+stB+'</td><td style="font-family:\'Share Tech Mono\',monospace;font-size:0.78rem;">'+(r.usedDate||'—')+'</td><td>'+(r.department||'—')+'</td><td>'+(r.deptLocation||'—')+'</td><td>'+(r.examiner||'—')+'</td><td>'+(r.purpose||'—')+'</td></tr>';
+  document.getElementById('hddCnt').textContent='Showing '+records.length+' of '+allHdds.length+' records';
+  if(!records.length){ document.getElementById('hddTbody').innerHTML='<tr><td colspan="8"><div class="empty">No records.</div></td></tr>'; return; }
+  var td=function(v,extra){ return '<td style="padding:10px 12px;border-bottom:1px solid rgba(30,45,90,.5);vertical-align:middle;'+(extra||'')+'">'+(v||'—')+'</td>'; };
+  document.getElementById('hddTbody').innerHTML=records.map(function(r,i){
+    var szB=r.size==='1 TB'?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 7px;font-family:\'Share Tech Mono\',monospace;font-size:.68rem;color:var(--accent);">1 TB</span>':r.size==='2 TB'?'<span style="background:rgba(123,94,167,.15);border:1px solid rgba(123,94,167,.3);border-radius:5px;padding:2px 7px;font-family:\'Share Tech Mono\',monospace;font-size:.68rem;color:#b490e8;">2 TB</span>':r.size||'—';
+    var stB=r.status==='Used'?'<span class="sbadge s-used">● Used</span>':'<span class="sbadge s-unused">○ Not Used</span>';
+    return '<tr>'+
+      td(i+1,'color:var(--muted);font-family:\'Share Tech Mono\',monospace;font-size:.7rem;')+
+      td('<span style="font-family:\'Share Tech Mono\',monospace;font-size:.78rem;color:var(--accent);">'+(r.serialNumber||'—')+'</span>')+
+      td(szB)+td(stB)+
+      td('<span style="font-family:\'Share Tech Mono\',monospace;font-size:.76rem;">'+(r.usedDate||'—')+'</span>')+
+      td(r.department)+td(r.examiner)+
+      td('<span style="font-family:\'Share Tech Mono\',monospace;font-size:.72rem;color:var(--muted);">'+(r.issuedTo||'—')+'</span>')+
+    '</tr>';
   }).join('');
 }
 
-// ═══════ STATUS BADGE HELPER ═════════════════════════════
-function statusBadge(status) {
-  var map = {
-    pending  : '<span class="status-badge s-pending">⏳ Pending</span>',
-    approved : '<span class="status-badge s-approved">✅ Approved</span>',
-    rejected : '<span class="status-badge s-rejected">❌ Rejected</span>',
-    completed: '<span class="status-badge s-completed">✔️ Completed</span>'
-  };
-  return map[status] || '<span class="status-badge">'+status+'</span>';
+// ── RESET FORMS ──────────────────────────────────────────
+function resetIssueForm() {
+  ['issueEmail','issueName','issueSerialInput','issueSize','issueDate','issueAdminNote'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('issueSerialTags').innerHTML='';
+  document.getElementById('issueSerialCount').style.display='none';
+  document.getElementById('issueQty').value='';
 }
 
-// ═══════ RESET ═══════════════════════════════════════════
-function resetAdminForm() {
-  ['aSerialInput','aUsedDate','aDept','aDeptLoc','aExaminer','aStoreLoc','aNote']
-    .forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('aSerialTags').innerHTML='';
-  document.getElementById('aSerialCount').style.display='none';
-  document.getElementById('aPurpose').value='';
-  document.getElementById('aHddSize').value='';
-  document.querySelectorAll('#aTabNew .pill').forEach(function(p){p.classList.remove('active');});
-}
-
-function resetUserForm() {
-  ['uSerialInput','uUsedDate','uDept','uDeptLoc','uExaminer','uNote']
-    .forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('uSerialTags').innerHTML='';
-  document.getElementById('uSerialCount').style.display='none';
-  document.getElementById('uPurpose').value='';
-  document.querySelectorAll('#uTabSubmit .pill').forEach(function(p){p.classList.remove('active');});
-}
-
-// ═══════ TOAST ═══════════════════════════════════════════
+// ── TOAST ────────────────────────────────────────────────
 function showToast(msg,type){
   var t=document.getElementById('toast');
   t.textContent=msg; t.className='toast '+type+' show';
   setTimeout(function(){t.className='toast';},4000);
 }
 
-// ── SERVICE WORKER REGISTRATION ──────────────────────────
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js')
-    .then(function(reg) {
-      console.log('[PWA] Service Worker registered:', reg.scope);
-    })
-    .catch(function(err) {
-      console.log('[PWA] Service Worker failed:', err);
-    });
-  });
-}
-
-// ── INSTALL PROMPT (Android) ──────────────────────────────
+// ── PWA ──────────────────────────────────────────────────
 var deferredPrompt;
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Show install banner after login
-  setTimeout(function() {
-    if (deferredPrompt && document.getElementById('installBanner')) {
-      document.getElementById('installBanner').style.display = 'flex';
-    }
-  }, 3000);
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault(); deferredPrompt=e;
+  setTimeout(function(){ if(deferredPrompt) document.getElementById('installBanner').style.display='flex'; },3000);
 });
-
-function installApp() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(function(result) {
-    if (result.outcome === 'accepted') showToast('App installed! Find it on your home screen.', 'success');
-    deferredPrompt = null;
-    document.getElementById('installBanner').style.display = 'none';
-  });
+function installApp(){
+  if(!deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(r){ if(r.outcome==='accepted') showToast('App installed!','success'); deferredPrompt=null; document.getElementById('installBanner').style.display='none'; });
 }
 </script>
-<!-- ══════════ PWA: INSTALL PROMPT + SERVICE WORKER ══════════ -->
-<style>
-/* Install banner */
-.install-banner{
-  position:fixed; bottom:0; left:0; right:0; z-index:1000;
-  background:linear-gradient(135deg,#141c35,#0f1629);
-  border-top:1px solid #1e2d5a;
-  padding:16px 20px;
-  display:flex; align-items:center; gap:14px;
-  transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-  box-shadow:0 -4px 30px rgba(0,200,255,0.15);
-}
-.install-banner.show{transform:translateY(0);}
-.install-icon{width:48px;height:48px;border:2px solid #00c8ff;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 15px rgba(0,200,255,0.3);}
-.install-icon svg{width:24px;height:24px;color:#00c8ff;}
-.install-text{flex:1;}
-.install-text strong{display:block;font-size:0.95rem;font-weight:700;color:#e0e8ff;letter-spacing:1px;}
-.install-text span{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#5a6a99;}
-.install-actions{display:flex;gap:8px;flex-shrink:0;}
-.btn-install{padding:10px 18px;background:linear-gradient(135deg,#00c8ff,#0077ff);border:none;border-radius:10px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:0.88rem;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
-.btn-install:hover{transform:translateY(-1px);}
-.btn-dismiss{padding:10px 14px;background:transparent;border:1px solid #1e2d5a;border-radius:10px;color:#5a6a99;font-family:'Rajdhani',sans-serif;font-size:0.82rem;cursor:pointer;}
-.btn-dismiss:hover{border-color:#ff4d6d;color:#ff4d6d;}
-
-/* Offline banner */
-.offline-banner{
-  position:fixed; top:0; left:0; right:0; z-index:999;
-  background:rgba(255,77,109,0.15); border-bottom:1px solid rgba(255,77,109,0.4);
-  padding:10px 20px; text-align:center;
-  font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:#ff4d6d;
-  letter-spacing:1px; display:none;
-}
-.offline-banner.show{display:block;}
-
-/* Update banner */
-.update-banner{
-  position:fixed; top:0; left:0; right:0; z-index:999;
-  background:rgba(0,200,255,0.1); border-bottom:1px solid rgba(0,200,255,0.3);
-  padding:10px 20px; display:none; align-items:center; justify-content:center; gap:12px;
-  font-family:'Share Tech Mono',monospace; font-size:0.75rem; color:#00c8ff; letter-spacing:1px;
-}
-.update-banner.show{display:flex;}
-
-/* Safe area for iOS notch */
-body{padding-bottom:env(safe-area-inset-bottom);}
-.install-banner{padding-bottom:calc(16px + env(safe-area-inset-bottom));}
-</style>
-
-<!-- Offline banner -->
-<div class="offline-banner" id="offlineBanner">
-  ⚠️ You are offline — Some features may not work
-</div>
-
-<!-- Update banner -->
-<div class="update-banner" id="updateBanner">
-  🔄 New version available!
-  <button onclick="updateApp()" style="background:rgba(0,200,255,0.2);border:1px solid rgba(0,200,255,0.4);border-radius:6px;color:#00c8ff;padding:4px 12px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.8rem;">Update Now</button>
-</div>
-
-<!-- Install banner (Android) -->
-<div class="install-banner" id="installBanner">
-  <div class="install-icon">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <ellipse cx="12" cy="5" rx="9" ry="3"/>
-      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-    </svg>
-  </div>
-  <div class="install-text">
-    <strong>Install HDD Manager</strong>
-    <span>Add to Home Screen for quick access</span>
-  </div>
-  <div class="install-actions">
-    <button class="btn-install" onclick="installApp()">Install</button>
-    <button class="btn-dismiss" onclick="dismissInstall()">✕</button>
-  </div>
-</div>
-
-<!-- iOS Install Instructions (shown only on iOS Safari) -->
-<div id="iosInstallHint" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:1000;background:linear-gradient(135deg,#141c35,#0f1629);border-top:1px solid #1e2d5a;padding:18px 20px;text-align:center;box-shadow:0 -4px 30px rgba(0,200,255,0.15);">
-  <div style="font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:#00c8ff;margin-bottom:8px;letter-spacing:1px;">📲 INSTALL ON iPHONE / iPAD</div>
-  <div style="font-size:0.85rem;color:#5a6a99;line-height:1.7;">
-    Tap <strong style="color:#e0e8ff;">Share</strong> <span style="font-size:1rem;">⬆️</span> at the bottom<br>
-    then tap <strong style="color:#e0e8ff;">"Add to Home Screen"</strong> <span style="font-size:1rem;">➕</span>
-  </div>
-  <button onclick="document.getElementById('iosInstallHint').style.display='none'" style="margin-top:12px;background:transparent;border:1px solid #1e2d5a;border-radius:8px;color:#5a6a99;padding:7px 20px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:0.85rem;">Got it</button>
-</div>
-
-<script>
-// ─────────────────────────────────────────────────────────
-// SERVICE WORKER REGISTRATION
-// ─────────────────────────────────────────────────────────
-var swRegistration = null;
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('./sw.js')
-    .then(function(reg) {
-      swRegistration = reg;
-      console.log('[PWA] Service Worker registered:', reg.scope);
-
-      // Check for updates
-      reg.addEventListener('updatefound', function() {
-        var newWorker = reg.installing;
-        newWorker.addEventListener('statechange', function() {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            document.getElementById('updateBanner').classList.add('show');
-          }
-        });
-      });
-    })
-    .catch(function(err) {
-      console.log('[PWA] Service Worker registration failed:', err);
-    });
-  });
-}
-
-function updateApp() {
-  if (swRegistration && swRegistration.waiting) {
-    swRegistration.waiting.postMessage({type: 'SKIP_WAITING'});
-  }
-  window.location.reload();
-}
-
-// ─────────────────────────────────────────────────────────
-// INSTALL PROMPT (Android / Desktop Chrome)
-// ─────────────────────────────────────────────────────────
-var deferredPrompt = null;
-
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-
-  // Show install banner after 3 seconds
-  setTimeout(function() {
-    if (!localStorage.getItem('pwa-installed') &&
-        !localStorage.getItem('pwa-dismissed')) {
-      document.getElementById('installBanner').classList.add('show');
-    }
-  }, 3000);
-});
-
-function installApp() {
-  if (!deferredPrompt) return;
-  document.getElementById('installBanner').classList.remove('show');
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(function(result) {
-    if (result.outcome === 'accepted') {
-      localStorage.setItem('pwa-installed', '1');
-      showToast('App installed successfully! 🎉', 'success');
-    }
-    deferredPrompt = null;
-  });
-}
-
-function dismissInstall() {
-  document.getElementById('installBanner').classList.remove('show');
-  localStorage.setItem('pwa-dismissed', '1');
-}
-
-window.addEventListener('appinstalled', function() {
-  document.getElementById('installBanner').classList.remove('show');
-  localStorage.setItem('pwa-installed', '1');
-  showToast('HDD Manager installed! 🎉', 'success');
-});
-
-// ─────────────────────────────────────────────────────────
-// iOS INSTALL HINT
-// ─────────────────────────────────────────────────────────
-var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-var isInStandaloneMode = ('standalone' in window.navigator) && window.navigator.standalone;
-
-if (isIOS && !isInStandaloneMode && !localStorage.getItem('ios-hint-dismissed')) {
-  setTimeout(function() {
-    document.getElementById('iosInstallHint').style.display = 'block';
-    localStorage.setItem('ios-hint-dismissed', '1');
-  }, 4000);
-}
-
-// ─────────────────────────────────────────────────────────
-// OFFLINE / ONLINE DETECTION
-// ─────────────────────────────────────────────────────────
-function updateOnlineStatus() {
-  var banner = document.getElementById('offlineBanner');
-  if (!navigator.onLine) {
-    banner.classList.add('show');
-    showToast('You are offline. Data will sync when reconnected.', 'warn');
-  } else {
-    banner.classList.remove('show');
-  }
-}
-
-window.addEventListener('online',  updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-updateOnlineStatus();
-
-// ─────────────────────────────────────────────────────────
-// STANDALONE MODE TWEAKS
-// ─────────────────────────────────────────────────────────
-if (isInStandaloneMode || window.matchMedia('(display-mode: standalone)').matches) {
-  document.documentElement.style.setProperty('--standalone', '1');
-  console.log('[PWA] Running as installed app');
-}
-</script>
-
 </body>
 </html>
