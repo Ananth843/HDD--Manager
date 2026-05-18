@@ -752,8 +752,7 @@ function sendEmail() {
       decl_id      : d.declId,
       quantity     : d.quantity,
       size         : d.size || 'N/A',
-      serials      : (d.serials||[]).join('
-'),
+      serials      : (d.serials||[]).join('\n'),
       transfer_date: d.transferDate || 'N/A',
       admin_note   : d.adminNote || 'None',
       issued_by    : d.issuedBy,
