@@ -1,4 +1,4 @@
-<!-- HDD Manager v5.2 -->
+<!-- HDD Manager v5.3 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1261,29 +1261,21 @@ function loadEmpIncoming(){
     if(!list.length){document.getElementById('empIncomingList').innerHTML='<div class="empty">No pending transfers.</div>';return;}
     document.getElementById('empIncomingList').innerHTML=list.map(function(t){
       var date=t.createdAt&&t.createdAt.toDate?t.createdAt.toDate().toLocaleDateString('en-IN'):'—';
-      return '<div class="decl-card pending" data-id="'+t.id+'" data-from="'+t.fromEmail+'" data-serials="'+t.serialsStr+'" data-loc="'+(t.location||\'\')+'">' +
-        '<div class="decl-header"><span class="decl-id">'+t.transferId+'</span><span class="sbadge s-pending">⏳ Pending</span></div>'+
-        '<div class="decl-serials">💾 '+t.serialsStr+'</div>'+
-        '<div class="decl-meta"><span>👤 From: '+(t.fromName||t.fromEmail)+'</span><span>📍 '+( t.location||'—')+'</span><span>'+date+'</span></div>'+
-        (t.reason?'<div style="font-size:.78rem;color:var(--muted);">📝 '+t.reason+'</div>':'')+
-        '<div class="action-row">'+
-          '<button class="btn btn-success btn-sm" onclick="empApproveTransfer(this)">✅ Accept</button>'+
-          '<button class="btn btn-error btn-sm" onclick="empRejectTransfer(this)">❌ Reject</button>'+
-        '</div>'+
-      '</div>';
+      var html='<div class="decl-card pending">';
+      html+='<div class="decl-header"><span class="decl-id">'+t.transferId+'</span><span class="sbadge s-pending">⏳ Pending</span></div>';
+      html+='<div class="decl-serials">💾 '+t.serialsStr+'</div>';
+      html+='<div class="decl-meta"><span>👤 From: '+(t.fromName||t.fromEmail)+'</span><span>📍 '+(t.location||'—')+'</span><span>'+date+'</span></div>';
+      if(t.reason) html+='<div style="font-size:.78rem;color:var(--muted);">📝 '+t.reason+'</div>';
+      html+='<div class="action-row">';
+      html+='<button class="btn btn-success btn-sm" onclick="empApproveTransfer(\'' +t.id+ '\',\'' +t.fromEmail+ '\',\'' +t.serialsStr+ '\',\'' +(t.location||'')+ '\')">✅ Accept</button>';
+      html+='<button class="btn btn-error btn-sm" onclick="empRejectTransfer(\'' +t.id+ '\')" >❌ Reject</button>';
+      html+='</div></div>';
+      return html;
     }).join('');
   });
 }
 
-function empApproveTransfer(btn){
-  var card = btn.closest('[data-id]');
-  var transferId = card ? card.getAttribute('data-id') : '';
-  var fromEmail  = card ? card.getAttribute('data-from') : '';
-  var serialsStr = card ? card.getAttribute('data-serials') : '';
-  var location   = card ? card.getAttribute('data-loc') : '';
-  _doEmpApprove(transferId, fromEmail, serialsStr, location);
-}
-function _doEmpApprove(transferId,fromEmail,serialsStr,location){
+function empApproveTransfer(transferId,fromEmail,serialsStr,location){
   var serials=serialsStr.split(',').map(function(s){return s.trim().toUpperCase();});
   var now=firebase.firestore.FieldValue.serverTimestamp();
   var batch=db.batch();
@@ -1296,12 +1288,7 @@ function _doEmpApprove(transferId,fromEmail,serialsStr,location){
   batch.commit().then(function(){showToast('Transfer accepted!','success');loadEmpIncoming();loadEmpHdds();});
 }
 
-function empRejectTransfer(btn){
-  var card = btn.closest('[data-id]');
-  var transferId = card ? card.getAttribute('data-id') : '';
-  _doEmpReject(transferId);
-}
-function _doEmpReject(transferId){
+function empRejectTransfer(transferId){
   db.collection('transfers').doc(transferId).update({status:'rejected',rejectedAt:firebase.firestore.FieldValue.serverTimestamp(),rejectedBy:currentUser})
   .then(function(){showToast('Transfer rejected.','info');loadEmpIncoming();});
 }
