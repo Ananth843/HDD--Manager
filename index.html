@@ -1,4 +1,4 @@
-<!-- HDD Manager v3.1 -->
+<!-- HDD Manager v5.0 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +20,10 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -210,6 +213,62 @@ select option{background:var(--card);}
 
 /* Install banner */
 #installBanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#141c35,#0f1629);border-top:1px solid #1e2d5a;padding:12px 16px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+
+/* ── AUTH STYLES ── */
+.auth-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:3px;margin-bottom:18px;width:100%;}
+.auth-tab{flex:1;padding:10px;background:none;border:none;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .25s ease;text-transform:uppercase;border-radius:10px;}
+.auth-tab.active{background:rgba(0,200,255,.15);color:var(--accent);}
+.strength-bar{height:4px;border-radius:2px;margin-top:5px;transition:all .3s ease;background:var(--border);}
+.strength-bar.weak{background:var(--error);width:33%;}
+.strength-bar.medium{background:var(--warn);width:66%;}
+.strength-bar.strong{background:var(--success);width:100%;}
+.emp-stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;}
+.emp-stat-num{font-size:1.8rem;font-weight:700;font-family:'Share Tech Mono',monospace;}
+.emp-stat-label{font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Share Tech Mono',monospace;}
+.timeline-item{display:flex;gap:12px;position:relative;padding-bottom:18px;}
+.timeline-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:4px;box-shadow:0 0 8px currentColor;}
+.timeline-line{position:absolute;left:5px;top:18px;bottom:0;width:2px;background:linear-gradient(to bottom,var(--border),transparent);}
+.timeline-content{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 13px;}
+
+/* ── AUTH STYLES ─────────────────────────────────────────── */
+.auth-tabs{display:flex;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:3px;margin-bottom:20px;}
+.auth-tab{flex:1;padding:10px;background:none;border:none;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:.9rem;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all .25s ease;text-transform:uppercase;border-radius:9px;}
+.auth-tab.active{background:rgba(0,200,255,.15);color:var(--accent);}
+
+.strength-bar{height:4px;border-radius:2px;margin-top:5px;transition:all .3s ease;background:var(--border);}
+.strength-bar.weak{background:var(--error);width:33%;}
+.strength-bar.medium{background:var(--warn);width:66%;}
+.strength-bar.strong{background:var(--success);width:100%;}
+
+/* Employee Dashboard */
+.emp-stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px;}
+.emp-stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;position:relative;overflow:hidden;}
+.emp-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.es-blue::before{background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.es-green::before{background:linear-gradient(90deg,transparent,var(--success),transparent);}
+.es-warn::before{background:linear-gradient(90deg,transparent,var(--warn),transparent);}
+.es-purple::before{background:linear-gradient(90deg,transparent,var(--admin),transparent);}
+.emp-stat-num{font-size:1.8rem;font-weight:700;font-family:'Share Tech Mono',monospace;margin-bottom:2px;}
+.es-blue .emp-stat-num{color:var(--accent);}
+.es-green .emp-stat-num{color:var(--success);}
+.es-warn .emp-stat-num{color:var(--warn);}
+.es-purple .emp-stat-num{color:var(--admin);}
+.emp-stat-label{font-size:.66rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'Share Tech Mono',monospace;}
+
+.hdd-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;transition:all .3s ease;}
+.hdd-card:hover{border-color:rgba(0,200,255,.3);transform:translateY(-1px);}
+.hdd-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.hdd-serial{font-family:'Share Tech Mono',monospace;font-size:.9rem;color:var(--accent);font-weight:700;}
+.hdd-meta{font-size:.78rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;}
+
+.timeline-item{display:flex;gap:12px;margin-bottom:14px;}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.tl-line{display:flex;flex-direction:column;align-items:center;}
+.tl-connector{width:2px;flex:1;min-height:20px;background:var(--border);margin:3px 0;}
+.tl-content{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 12px;}
+.tl-date{font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--muted);}
+.tl-title{font-size:.84rem;font-weight:600;margin-bottom:3px;}
+.tl-detail{font-size:.76rem;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -267,7 +326,7 @@ select option{background:var(--card);}
   </div>
 </div>
 
-<!-- ════════════ LOGIN ════════════ -->
+<!-- ════════════ AUTH PAGE ════════════ -->
 <div class="page" id="loginPage">
   <div class="hdr">
     <div class="hdr-icon">
@@ -281,16 +340,82 @@ select option{background:var(--card);}
     <p>INCOME TAX DEPT // DIGITAL EVIDENCE UNIT</p>
     <div class="scan-line"></div>
   </div>
-  <div class="card">
-    <div class="fg">
-      <label>Email Address</label>
-      <input type="email" id="loginEmail" placeholder="Enter your official email" autocomplete="email">
+  <div class="card" style="max-width:400px;">
+    <!-- Auth Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="authTabLogin"  onclick="switchAuthTab('login')">🔑 Login</button>
+      <button class="auth-tab"        id="authTabSignup" onclick="switchAuthTab('signup')">📝 Sign Up</button>
+      <button class="auth-tab"        id="authTabReset"  onclick="switchAuthTab('reset')">🔒 Reset</button>
     </div>
-    <div class="fg">
-      <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Access System</button>
+
+    <!-- LOGIN FORM -->
+    <div id="authLogin">
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <div style="position:relative;">
+          <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password">
+          <button onclick="togglePwd('loginPassword')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;width:auto;padding:0;">👁</button>
+        </div>
+      </div>
+      <div class="fg">
+        <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">🔑 Login</button>
+      </div>
+      <div style="text-align:center;font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--muted);">
+        Admins get full dashboard · Employees get personal portal
+      </div>
     </div>
-    <div style="text-align:center;margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--muted);">
-      Admins → Full Dashboard &nbsp;|&nbsp; Others → Declaration Portal
+
+    <!-- SIGNUP FORM -->
+    <div id="authSignup" style="display:none;">
+      <div class="fg">
+        <label>Full Name</label>
+        <input type="text" id="signupName" placeholder="Your full name">
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="signupEmail" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="fg">
+        <label>Department <span class="opt">/ optional</span></label>
+        <input type="text" id="signupDept" placeholder="e.g. CT, CC, IT">
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <div style="position:relative;">
+          <input type="password" id="signupPassword" placeholder="Min 6 characters" oninput="checkStrength(this.value)" autocomplete="new-password">
+          <button onclick="togglePwd('signupPassword')" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;width:auto;padding:0;">👁</button>
+        </div>
+        <div class="strength-bar" id="strengthBar"></div>
+        <div class="hint" id="strengthLabel"></div>
+      </div>
+      <div class="fg">
+        <label>Confirm Password</label>
+        <input type="password" id="signupConfirm" placeholder="Re-enter password" autocomplete="new-password">
+      </div>
+      <div class="fg">
+        <button class="btn btn-success" id="signupBtn" onclick="doSignup()">📝 Create Account</button>
+      </div>
+      <div style="text-align:center;font-family:'Share Tech Mono',monospace;font-size:.66rem;color:var(--muted);">
+        Your account will be reviewed for admin access
+      </div>
+    </div>
+
+    <!-- RESET FORM -->
+    <div id="authReset" style="display:none;">
+      <div style="background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:10px;padding:12px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--muted);line-height:1.7;">
+        Enter your email and we will send you a password reset link.
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <input type="email" id="resetEmail" placeholder="your@email.com">
+      </div>
+      <div class="fg">
+        <button class="btn btn-warn" id="resetBtn" onclick="doReset()">📧 Send Reset Link</button>
+      </div>
     </div>
   </div>
 </div>
@@ -316,6 +441,7 @@ select option{background:var(--card);}
       <button class="nav-tab admin-tab"   id="atab-new"     onclick="aTab('new')">➕ Issue HDD</button>
       <button class="nav-tab success-tab" id="atab-hdds"    onclick="aTab('hdds')">💾 HDD Records</button>
       <button class="nav-tab warn-tab"    id="atab-date"    onclick="aTab('date')">📅 Used Date</button>
+      <button class="nav-tab"            id="atab-routes"  onclick="aTab('routes')" style="color:var(--muted);">🗺️ HDD Routes</button>
     </div>
 
     <!-- DECLARATIONS TAB -->
@@ -449,6 +575,22 @@ select option{background:var(--card);}
       </div>
     </div>
   </div>
+
+    <!-- ROUTES TAB -->
+    <div id="aTabRoutes" style="display:none;">
+      <div class="fc" style="margin-bottom:14px;">
+        <div class="fg" style="margin-bottom:0;">
+          <label>Search HDD Serial Number</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="routeSerial" placeholder="e.g. WX72A65L4176" class="mono" style="flex:1;">
+            <button class="btn btn-primary btn-sm" style="padding:11px 20px;" onclick="loadHddRoute()">🗺️ Show Route</button>
+          </div>
+        </div>
+      </div>
+      <div id="routeResult"></div>
+    </div>
+
+  </div>
 </div>
 
 <!-- ════════════ EMPLOYEE PORTAL ════════════ -->
@@ -467,16 +609,296 @@ select option{background:var(--card);}
     </div>
 
     <div class="nav-tabs">
-      <button class="nav-tab active"      id="utab-pending" onclick="uTab('pending')">📬 Pending</button>
-      <button class="nav-tab success-tab" id="utab-done"    onclick="uTab('done')">✅ Completed</button>
+      <button class="nav-tab active"      id="utab-pending"  onclick="uTab('pending')">📬 Pending</button>
+      <button class="nav-tab warn-tab"    id="utab-transfer" onclick="uTab('transfer')">🔄 Transfer HDD</button>
+      <button class="nav-tab"            id="utab-incoming" onclick="uTab('incoming')" style="color:var(--muted);">📥 Incoming</button>
+      <button class="nav-tab success-tab" id="utab-done"     onclick="uTab('done')">✅ Completed</button>
     </div>
 
     <div id="uTabPending">
       <div id="pendingDeclList"><div class="empty">Loading your declarations...</div></div>
     </div>
+
+    <!-- TRANSFER TAB -->
+    <div id="uTabTransfer" style="display:none;">
+      <div class="fc" style="border-color:rgba(255,179,71,.3);">
+        <div style="background:rgba(255,179,71,.06);border:1px solid rgba(255,179,71,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-family:'Share Tech Mono',monospace;font-size:.71rem;color:var(--muted);line-height:1.7;">
+          🔄 Transfer HDDs currently held by you to another person.<br>
+          The recipient must approve the transfer.<br>
+          All transfers are logged and traceable by admin.
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Serial Number(s) to Transfer</label>
+          <textarea class="mono" id="tfrSerialInput" placeholder="e.g. WX72A65L4176, WX62A65RNR3Z" rows="2" oninput="updateTfrTags()"></textarea>
+          <div class="hint">Only HDDs currently assigned to you</div>
+          <div class="stags" id="tfrSerialTags"></div>
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Transfer To (Email)</label>
+          <input type="email" id="tfrToEmail" placeholder="recipient@gmail.com">
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Recipient Name <span class="opt">/ optional</span></label>
+          <input type="text" id="tfrToName" placeholder="Full name of recipient">
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Transfer Location</label>
+          <input type="text" id="tfrLocation" placeholder="e.g. Blr, Chennai, Mysore">
+          <div class="hint">Current physical location of the HDD</div>
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Reason for Transfer <span class="opt">/ optional</span></label>
+          <textarea id="tfrReason" placeholder="Why are you transferring this HDD?"></textarea>
+        </div>
+        <div class="fg">
+          <button class="btn btn-warn" id="tfrBtn" onclick="submitTransfer()">🔄 Initiate Transfer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INCOMING TRANSFERS TAB -->
+    <div id="uTabIncoming" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.74rem;color:var(--muted);">Transfer requests waiting for your approval</div>
+        <button class="btn btn-sm btn-primary" onclick="loadIncomingTransfers()">↻ Refresh</button>
+      </div>
+      <div id="incomingTransferList"><div class="empty">Loading...</div></div>
+    </div>
+
     <div id="uTabDone" style="display:none;">
       <div id="doneDeclList"><div class="empty">Loading...</div></div>
     </div>
+  </div>
+</div>
+
+<!-- ════════════ EMPLOYEE DASHBOARD ════════════ -->
+<div class="page hidden" id="empPage" style="justify-content:flex-start;padding-top:24px;">
+  <div class="form-container">
+
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-size:1.1rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--success),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">My HDD Portal</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);">Personal Dashboard</div>
+      </div>
+      <div class="ubadge user" style="margin-bottom:0;flex-wrap:wrap;">
+        <div class="dot user"></div>
+        <span id="empNameDisplay" style="color:var(--success);font-weight:700;"></span>
+        <span id="empEmailDisplay" style="font-size:.68rem;"></span>
+        <button class="btn-ghost" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:18px;" id="empStats">
+      <div class="emp-stat"><div class="emp-stat-num" id="empStatTotal" style="color:var(--accent);">—</div><div class="emp-stat-label">Total HDDs</div></div>
+      <div class="emp-stat"><div class="emp-stat-num" id="empStatUsed" style="color:var(--success);">—</div><div class="emp-stat-label">Used</div></div>
+      <div class="emp-stat"><div class="emp-stat-num" id="empStatPending" style="color:var(--warn);">—</div><div class="emp-stat-label">Pending Ack</div></div>
+      <div class="emp-stat"><div class="emp-stat-num" id="empStatTransfers" style="color:var(--admin);">—</div><div class="emp-stat-label">Transfers</div></div>
+    </div>
+
+    <!-- Nav tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active"      id="etab-home"     onclick="eTab('home')">🏠 Dashboard</button>
+      <button class="nav-tab warn-tab"    id="etab-transfer" onclick="eTab('transfer')">🔄 Transfer</button>
+      <button class="nav-tab"            id="etab-incoming" onclick="eTab('incoming')" style="color:var(--muted);">📥 Incoming</button>
+      <button class="nav-tab success-tab" id="etab-history"  onclick="eTab('history')">📋 My History</button>
+    </div>
+
+    <!-- HOME TAB -->
+    <div id="eTabHome">
+      <!-- Pending declarations -->
+      <div style="font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--warn);font-family:'Share Tech Mono',monospace;margin-bottom:10px;font-weight:700;">📬 Pending Declarations</div>
+      <div id="empPendingDecls"><div class="empty">Loading...</div></div>
+
+      <div style="font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;margin:16px 0 10px;font-weight:700;">💾 My Current HDDs</div>
+      <div id="empCurrentHdds"><div class="empty">Loading...</div></div>
+    </div>
+
+    <!-- TRANSFER TAB -->
+    <div id="eTabTransfer" style="display:none;">
+      <div class="fc" style="border-color:rgba(255,179,71,.3);">
+        <div style="background:rgba(255,179,71,.06);border:1px solid rgba(255,179,71,.2);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--muted);line-height:1.7;">
+          🔄 Transfer HDDs to another person.<br>Recipient must approve. All transfers are tracked.
+        </div>
+        <div class="fg"><label style="color:var(--warn);">Serial Number(s)</label>
+          <textarea class="mono" id="eTfrSerials" placeholder="e.g. WX72A65L4176, WX62..." rows="2" oninput="updateETfrTags()"></textarea>
+          <div class="stags" id="eTfrTags"></div>
+        </div>
+        <div class="fg"><label style="color:var(--warn);">Transfer To (Email)</label>
+          <input type="email" id="eTfrToEmail" placeholder="recipient@email.com"></div>
+        <div class="fg"><label style="color:var(--warn);">Recipient Name <span class="opt">/ optional</span></label>
+          <input type="text" id="eTfrToName" placeholder="Full name"></div>
+        <div class="fg"><label style="color:var(--warn);">Location</label>
+          <input type="text" id="eTfrLocation" placeholder="e.g. Blr, Chennai"></div>
+        <div class="fg"><label style="color:var(--warn);">Reason <span class="opt">/ optional</span></label>
+          <textarea id="eTfrReason" placeholder="Reason for transfer..."></textarea></div>
+        <div class="fg"><button class="btn btn-warn" id="eTfrBtn" onclick="empSubmitTransfer()">🔄 Initiate Transfer</button></div>
+      </div>
+    </div>
+
+    <!-- INCOMING TAB -->
+    <div id="eTabIncoming" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--muted);">Transfers waiting for your approval</div>
+        <button class="btn btn-sm btn-primary" onclick="empLoadIncoming()">↻ Refresh</button>
+      </div>
+      <div id="empIncomingList"><div class="empty">Loading...</div></div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div id="eTabHistory" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--muted);">Your complete HDD activity timeline</div>
+        <button class="btn btn-sm btn-primary" onclick="empLoadHistory()">↻ Refresh</button>
+      </div>
+      <div id="empHistoryList"><div class="empty">Loading...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════ EMPLOYEE DASHBOARD ════════════ -->
+<div class="page hidden" id="empDashPage" style="justify-content:flex-start;padding-top:24px;">
+  <div class="app-container">
+
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-size:1.1rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--success),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">My HDD Dashboard</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--muted);">Personal HDD usage tracker</div>
+      </div>
+      <div class="ubadge user" style="margin-bottom:0;">
+        <div class="dot user"></div>
+        <div>
+          <div id="empName" style="font-weight:700;font-size:.82rem;"></div>
+          <div id="empEmailBadge" style="font-size:.68rem;color:var(--muted);"></div>
+        </div>
+        <button class="btn-ghost" onclick="doLogout()">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="dash-grid" style="margin-bottom:18px;">
+      <div class="stat-card sc-blue"><div class="stat-num" id="empStatTotal">—</div><div class="stat-label">Total HDDs</div></div>
+      <div class="stat-card sc-green"><div class="stat-num" id="empStatUsed">—</div><div class="stat-label">Used</div></div>
+      <div class="stat-card sc-warn"><div class="stat-num" id="empStatUnused">—</div><div class="stat-label">Not Used</div></div>
+      <div class="stat-card sc-purple"><div class="stat-num" id="empStatTransfers">—</div><div class="stat-label">Transfers</div></div>
+    </div>
+
+    <!-- Nav tabs -->
+    <div class="nav-tabs">
+      <button class="nav-tab active"      id="etab-hdds"      onclick="eTab('hdds')">💾 My HDDs</button>
+      <button class="nav-tab warn-tab"    id="etab-transfer"  onclick="eTab('transfer')">🔄 Transfer</button>
+      <button class="nav-tab"            id="etab-incoming"  onclick="eTab('incoming')" style="color:var(--muted);">📥 Incoming</button>
+      <button class="nav-tab success-tab" id="etab-decls"     onclick="eTab('decls')">📋 Declarations</button>
+      <button class="nav-tab"            id="etab-profile"   onclick="eTab('profile')" style="color:var(--muted);">👤 Profile</button>
+    </div>
+
+    <!-- MY HDDs TAB -->
+    <div id="eTabHdds">
+      <div class="search-bar">
+        <input type="text" id="empHddSearch" placeholder="🔍 Search serial number..." oninput="filterEmpHdds()">
+        <select id="empHddStatus" onchange="filterEmpHdds()">
+          <option value="">All Status</option>
+          <option value="Used">Used</option>
+          <option value="Not Used">Not Used</option>
+        </select>
+        <button class="btn btn-sm btn-primary" onclick="loadEmpHdds()">↻ Refresh</button>
+      </div>
+      <div id="empHddList"><div class="empty">Loading your HDDs...</div></div>
+    </div>
+
+    <!-- TRANSFER TAB -->
+    <div id="eTabTransfer" style="display:none;">
+      <div class="fc" style="border-color:rgba(255,179,71,.3);">
+        <div style="background:rgba(255,179,71,.06);border:1px solid rgba(255,179,71,.2);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-family:'Share Tech Mono',monospace;font-size:.71rem;color:var(--muted);line-height:1.7;">
+          🔄 Transfer HDDs assigned to you to another person.<br>
+          The recipient must approve. All transfers are logged.
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Serial Number(s)</label>
+          <textarea class="mono" id="empTfrSerial" placeholder="e.g. WX72A65L4176, WX62A65RNR3Z" rows="2" oninput="updateEmpTfrTags()"></textarea>
+          <div class="stags" id="empTfrTags"></div>
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Transfer To (Email)</label>
+          <input type="email" id="empTfrToEmail" placeholder="recipient@gmail.com">
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Recipient Name <span class="opt">/ optional</span></label>
+          <input type="text" id="empTfrToName" placeholder="Full name">
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Current Location</label>
+          <input type="text" id="empTfrLocation" placeholder="e.g. Blr, Chennai">
+        </div>
+        <div class="fg">
+          <label style="color:var(--warn);">Reason <span class="opt">/ optional</span></label>
+          <textarea id="empTfrReason" placeholder="Why are you transferring?"></textarea>
+        </div>
+        <div class="fg">
+          <button class="btn btn-warn" id="empTfrBtn" onclick="empSubmitTransfer()">🔄 Initiate Transfer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INCOMING TAB -->
+    <div id="eTabIncoming" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--muted);">Transfer requests waiting for your approval</div>
+        <button class="btn btn-sm btn-primary" onclick="loadEmpIncoming()">↻ Refresh</button>
+      </div>
+      <div id="empIncomingList"><div class="empty">Loading...</div></div>
+    </div>
+
+    <!-- DECLARATIONS TAB -->
+    <div id="eTabDecls" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--muted);">All declarations issued to you</div>
+        <button class="btn btn-sm btn-primary" onclick="loadEmpDecls()">↻ Refresh</button>
+      </div>
+      <div id="empDeclList"><div class="empty">Loading...</div></div>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div id="eTabProfile" style="display:none;">
+      <div class="fc">
+        <div style="font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;margin-bottom:16px;font-weight:700;">MY PROFILE</div>
+        <div class="fg">
+          <label>Full Name</label>
+          <input type="text" id="profileName" placeholder="Your full name">
+        </div>
+        <div class="fg">
+          <label>Email</label>
+          <input type="email" id="profileEmail" readonly style="background:rgba(0,200,255,.03);border-color:rgba(0,200,255,.2);color:var(--muted);">
+        </div>
+        <div class="fg">
+          <label>Department</label>
+          <input type="text" id="profileDept" placeholder="e.g. CT, CC">
+        </div>
+        <div class="fg">
+          <label>Office Location</label>
+          <input type="text" id="profileLocation" placeholder="e.g. Blr, Chennai">
+        </div>
+        <div class="fg">
+          <button class="btn btn-success" id="profileSaveBtn" onclick="saveProfile()">💾 Save Profile</button>
+        </div>
+        <hr class="divider" data-label="Change Password">
+        <div class="fg">
+          <label>New Password</label>
+          <input type="password" id="newPassword" placeholder="Min 6 characters">
+        </div>
+        <div class="fg">
+          <label>Confirm New Password</label>
+          <input type="password" id="confirmNewPassword" placeholder="Re-enter new password">
+        </div>
+        <div class="fg">
+          <button class="btn btn-primary" onclick="changePassword()">🔑 Change Password</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -513,7 +935,8 @@ const firebaseConfig = {
   measurementId     : "G-3YWF222RCR"
 };
 firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
+var db   = firebase.firestore();
+var auth = firebase.auth();
 
 // ── EMAILJS CONFIG ────────────────────────────────────
 // Sign up free at emailjs.com → get these 3 values
@@ -545,6 +968,381 @@ var allHdds     = [];
 var activeDeclId = "";
 var activeEmailDeclId = "";
 
+
+// ══════════════════════════════════════════════════════════
+// AUTH HELPERS
+// ══════════════════════════════════════════════════════════
+function switchAuthTab(tab) {
+  document.getElementById('authLogin').style.display  = tab==='login'  ? 'block' : 'none';
+  document.getElementById('authSignup').style.display = tab==='signup' ? 'block' : 'none';
+  document.getElementById('tabLogin').style.background  = tab==='login'  ? 'rgba(0,200,255,.15)' : 'none';
+  document.getElementById('tabLogin').style.color       = tab==='login'  ? 'var(--accent)' : 'var(--muted)';
+  document.getElementById('tabSignup').style.background = tab==='signup' ? 'rgba(0,229,160,.15)' : 'none';
+  document.getElementById('tabSignup').style.color      = tab==='signup' ? 'var(--success)' : 'var(--muted)';
+}
+
+function togglePwd(id) {
+  var el = document.getElementById(id);
+  el.type = el.type==='password' ? 'text' : 'password';
+}
+
+// ── FIREBASE AUTH STATE LISTENER ──────────────────────────
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    currentUser = user.email.toLowerCase();
+    isAdmin = ADMINS.includes(currentUser);
+    if (isAdmin) {
+      document.getElementById('adminEmail').textContent = currentUser;
+      if (!document.getElementById('adminPage').classList.contains('hidden')) return;
+      transitionTo('loginPage','adminPage');
+      setTimeout(loadDeclarations, 300);
+    } else {
+      loadUserProfile(user);
+    }
+  }
+});
+
+// ── SIGNUP ────────────────────────────────────────────────
+function doSignup() {
+  var name     = document.getElementById('signupName').value.trim();
+  var email    = document.getElementById('signupEmail').value.trim().toLowerCase();
+  var dept     = document.getElementById('signupDept').value.trim();
+  var location = document.getElementById('signupLocation').value.trim();
+  var password = document.getElementById('signupPassword').value;
+  var confirm  = document.getElementById('signupConfirm').value;
+
+  if (!name)    { showToast('Enter your full name.','error'); return; }
+  if (!email)   { showToast('Enter your email.','error'); return; }
+  if (!password){ showToast('Enter a password.','error'); return; }
+  if (password.length < 6) { showToast('Password must be at least 6 characters.','error'); return; }
+  if (password !== confirm) { showToast('Passwords do not match.','error'); return; }
+
+  var btn = document.getElementById('signupBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Creating account...';
+
+  auth.createUserWithEmailAndPassword(email, password)
+  .then(function(cred) {
+    // Save profile to Firestore
+    return db.collection('users').doc(email).set({
+      email    : email,
+      name     : name,
+      dept     : dept,
+      location : location,
+      role     : 'employee',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  })
+  .then(function() {
+    showToast('Account created! Welcome, '+name+'!','success');
+  })
+  .catch(function(err) {
+    var msg = err.code==='auth/email-already-in-use'
+      ? 'This email is already registered. Please login.'
+      : err.message;
+    showToast(msg,'error');
+  })
+  .finally(function(){ btn.disabled=false; btn.innerHTML='Create Account'; });
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
+function doLogin() {
+  var email    = document.getElementById('loginEmail').value.trim().toLowerCase();
+  var password = document.getElementById('loginPassword').value;
+
+  if (!email)    { showToast('Enter your email.','error'); return; }
+  if (!password) { showToast('Enter your password.','error'); return; }
+
+  var btn = document.getElementById('loginBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Signing in...';
+
+  auth.signInWithEmailAndPassword(email, password)
+  .then(function(cred) {
+    currentUser = email;
+    isAdmin = ADMINS.includes(email);
+    db.collection('logins').add({
+      email:email, isAdmin:isAdmin,
+      timestamp:firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){});
+    showToast('Welcome back!','success');
+  })
+  .catch(function(err) {
+    var msg = err.code==='auth/wrong-password' ? 'Incorrect password.'
+            : err.code==='auth/user-not-found' ? 'No account found. Please sign up.'
+            : err.code==='auth/too-many-requests' ? 'Too many attempts. Try later.'
+            : err.message;
+    showToast(msg,'error');
+  })
+  .finally(function(){ btn.disabled=false; btn.innerHTML='Login'; });
+}
+
+// Allow Enter key
+document.addEventListener('DOMContentLoaded', function(){
+  ['loginEmail','loginPassword'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+  });
+  ['signupName','signupEmail','signupPassword','signupConfirm'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.addEventListener('keydown',function(e){ if(e.key==='Enter') doSignup(); });
+  });
+});
+
+// ── FORGOT PASSWORD ───────────────────────────────────────
+function forgotPassword() {
+  var email = document.getElementById('loginEmail').value.trim();
+  if (!email) { showToast('Enter your email first.','warn'); return; }
+  auth.sendPasswordResetEmail(email)
+  .then(function(){ showToast('Password reset email sent!','success'); })
+  .catch(function(err){ showToast(err.message,'error'); });
+}
+
+// ── LOGOUT ────────────────────────────────────────────────
+function doLogout() {
+  auth.signOut().then(function() {
+    currentUser=''; isAdmin=false;
+    document.getElementById('loginEmail').value='';
+    document.getElementById('loginPassword').value='';
+    ['adminPage','userPage','empDashPage','ackPage'].forEach(function(p){
+      var el=document.getElementById(p);
+      if(el && !el.classList.contains('hidden')) transitionTo(p,'loginPage');
+    });
+    showToast('Signed out.','info');
+  });
+}
+
+// ── LOAD USER PROFILE → show employee dashboard ───────────
+function loadUserProfile(user) {
+  currentUser = user.email.toLowerCase();
+  db.collection('users').doc(currentUser).get()
+  .then(function(doc) {
+    var profile = doc.exists ? doc.data() : { name: currentUser.split('@')[0], email: currentUser };
+    empProfile = profile;
+
+    document.getElementById('empName').textContent       = profile.name || currentUser.split('@')[0];
+    document.getElementById('empEmailBadge').textContent = currentUser;
+    document.getElementById('profileName').value         = profile.name || '';
+    document.getElementById('profileEmail').value        = currentUser;
+    document.getElementById('profileDept').value         = profile.dept || '';
+    document.getElementById('profileLocation').value     = profile.location || '';
+
+    transitionTo('loginPage','empDashPage');
+    loadEmpHdds();
+    showToast('Welcome, '+(profile.name||currentUser.split('@')[0])+'!','success');
+  });
+}
+
+var empProfile  = {};
+var allEmpHdds  = [];
+
+// ══════════════════════════════════════════════════════════
+// EMPLOYEE DASHBOARD FUNCTIONS
+// ══════════════════════════════════════════════════════════
+function eTab(tab) {
+  ['hdds','transfer','incoming','decls','profile'].forEach(function(t){
+    document.getElementById('etab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('eTab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
+  });
+  if(tab==='incoming') loadEmpIncoming();
+  if(tab==='decls')    loadEmpDecls();
+}
+
+// ── MY HDDs ───────────────────────────────────────────────
+function loadEmpHdds() {
+  document.getElementById('empHddList').innerHTML='<div class="empty">Loading...</div>';
+  db.collection('hdds').where('issuedTo','==',currentUser).get()
+  .then(function(snap){
+    allEmpHdds=[];
+    snap.forEach(function(doc){ allEmpHdds.push(Object.assign({id:doc.id},doc.data())); });
+
+    var used   = allEmpHdds.filter(function(h){return h.status==='Used';}).length;
+    var unused = allEmpHdds.filter(function(h){return h.status!=='Used';}).length;
+
+    document.getElementById('empStatTotal').textContent    = allEmpHdds.length;
+    document.getElementById('empStatUsed').textContent     = used;
+    document.getElementById('empStatUnused').textContent   = unused;
+
+    // Count transfers
+    db.collection('transfers').where('fromEmail','==',currentUser).get()
+    .then(function(tSnap){
+      document.getElementById('empStatTransfers').textContent = tSnap.size;
+    });
+
+    renderEmpHdds(allEmpHdds);
+  });
+}
+
+function filterEmpHdds(){
+  var q=document.getElementById('empHddSearch').value.toLowerCase();
+  var st=document.getElementById('empHddStatus').value;
+  renderEmpHdds(allEmpHdds.filter(function(h){
+    return (!q||(h.serialNumber||'').toLowerCase().includes(q))&&(!st||h.status===st);
+  }));
+}
+
+function renderEmpHdds(hdds) {
+  var el=document.getElementById('empHddList');
+  if(!hdds.length){el.innerHTML='<div class="empty">No HDDs assigned to you yet.</div>';return;}
+  el.innerHTML=hdds.map(function(h){
+    var stBadge=h.status==='Used'?'<span class="sbadge s-used">● Used</span>':'<span class="sbadge s-unused">○ Not Used</span>';
+    var szBadge=h.size?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 7px;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--accent);">'+h.size+'</span>':'';
+    return '<div class="decl-card '+(h.status==='Used'?'acknowledged':'pending')+'">'+
+      '<div class="decl-header">'+
+        '<span style="font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--accent);font-weight:700;">'+h.serialNumber+'</span>'+
+        '<div style="display:flex;gap:6px;">'+szBadge+stBadge+'</div>'+
+      '</div>'+
+      '<div class="decl-meta">'+
+        (h.usedDate?'<span>📅 Used: '+h.usedDate+'</span>':'')+
+        (h.department?'<span>🏢 '+h.department+'</span>':'')+
+        (h.deptLocation?'<span>📍 '+h.deptLocation+'</span>':'')+
+        (h.examiner?'<span>👤 '+h.examiner+'</span>':'')+
+        (h.purpose?'<span>🎯 '+h.purpose+'</span>':'')+
+      '</div>'+
+      (h.lastLocation?'<div style="font-size:.76rem;color:var(--muted);margin-top:4px;">📍 Last location: '+h.lastLocation+'</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+// ── EMPLOYEE TRANSFER ─────────────────────────────────────
+function updateEmpTfrTags(){
+  var raw=document.getElementById('empTfrSerial').value;
+  var s=raw.split(',').map(function(x){return x.trim().toUpperCase();}).filter(Boolean);
+  document.getElementById('empTfrTags').innerHTML=s.map(function(x){
+    return '<div class="stag" style="border-color:rgba(255,179,71,.3);color:var(--warn);">'+x+'</div>';
+  }).join('');
+}
+
+function empSubmitTransfer() {
+  var serialRaw = document.getElementById('empTfrSerial').value.trim();
+  var toEmail   = document.getElementById('empTfrToEmail').value.trim().toLowerCase();
+  var toName    = document.getElementById('empTfrToName').value.trim();
+  var location  = document.getElementById('empTfrLocation').value.trim();
+  var reason    = document.getElementById('empTfrReason').value.trim();
+
+  if(!serialRaw){ showToast('Enter serial numbers.','error'); return; }
+  if(!toEmail)  { showToast('Enter recipient email.','error'); return; }
+  if(!location) { showToast('Enter current location.','error'); return; }
+
+  var serials = serialRaw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+  var btn=document.getElementById('empTfrBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Sending...';
+
+  var transferId='TFR-'+Date.now().toString(36).toUpperCase();
+  var now=firebase.firestore.FieldValue.serverTimestamp();
+  var batch=db.batch();
+
+  batch.set(db.collection('transfers').doc(transferId),{
+    transferId,serials,serialsStr:serials.join(', '),
+    fromEmail:currentUser,fromName:empProfile.name||currentUser,
+    toEmail,toName,location,reason,status:'pending',createdAt:now,updatedAt:now
+  });
+
+  serials.forEach(function(serial){
+    var ref=db.collection('hdd_history').doc();
+    batch.set(ref,{serial,eventType:'transfer_initiated',fromEmail:currentUser,fromName:empProfile.name||currentUser,toEmail,toName,location,reason,transferId,timestamp:now});
+  });
+
+  batch.commit()
+  .then(function(){
+    showToast('Transfer request sent to '+toEmail+'!','success');
+    ['empTfrSerial','empTfrToEmail','empTfrToName','empTfrLocation','empTfrReason'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('empTfrTags').innerHTML='';
+  })
+  .catch(function(err){showToast('Error: '+err.message,'error');})
+  .finally(function(){btn.disabled=false;btn.innerHTML='🔄 Initiate Transfer';});
+}
+
+// ── INCOMING TRANSFERS ────────────────────────────────────
+function loadEmpIncoming(){
+  document.getElementById('empIncomingList').innerHTML='<div class="empty">Loading...</div>';
+  db.collection('transfers').where('toEmail','==',currentUser).where('status','==','pending').orderBy('createdAt','desc').get()
+  .then(function(snap){
+    var list=[];
+    snap.forEach(function(doc){list.push(Object.assign({id:doc.id},doc.data()));});
+    if(!list.length){document.getElementById('empIncomingList').innerHTML='<div class="empty">No pending transfers.</div>';return;}
+    document.getElementById('empIncomingList').innerHTML=list.map(function(t){
+      var date=t.createdAt&&t.createdAt.toDate?t.createdAt.toDate().toLocaleDateString('en-IN'):'—';
+      return '<div class="decl-card pending">'+
+        '<div class="decl-header"><span class="decl-id">'+t.transferId+'</span><span class="sbadge s-pending">⏳ Pending</span></div>'+
+        '<div class="decl-serials">💾 '+t.serialsStr+'</div>'+
+        '<div class="decl-meta"><span>👤 From: '+(t.fromName||t.fromEmail)+'</span><span>📍 '+( t.location||'—')+'</span><span>'+date+'</span></div>'+
+        (t.reason?'<div style="font-size:.78rem;color:var(--muted);">📝 '+t.reason+'</div>':'')+
+        '<div class="action-row">'+
+          '<button class="btn btn-success btn-sm" onclick="empApproveTransfer(''+t.id+'',''+t.fromEmail+'',''+t.serialsStr+'',''+t.location+'')">✅ Accept</button>'+
+          '<button class="btn btn-error btn-sm" onclick="empRejectTransfer(''+t.id+'')">❌ Reject</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  });
+}
+
+function empApproveTransfer(transferId,fromEmail,serialsStr,location){
+  var serials=serialsStr.split(',').map(function(s){return s.trim().toUpperCase();});
+  var now=firebase.firestore.FieldValue.serverTimestamp();
+  var batch=db.batch();
+  batch.update(db.collection('transfers').doc(transferId),{status:'approved',approvedAt:now,approvedBy:currentUser,updatedAt:now});
+  serials.forEach(function(serial){
+    batch.set(db.collection('hdds').doc(serial),{issuedTo:currentUser,lastLocation:location,updatedAt:now,lastUpdatedBy:currentUser},{merge:true});
+    var ref=db.collection('hdd_history').doc();
+    batch.set(ref,{serial,eventType:'transfer_approved',fromEmail,toEmail:currentUser,toName:empProfile.name||currentUser,location,transferId,timestamp:now});
+  });
+  batch.commit().then(function(){showToast('Transfer accepted!','success');loadEmpIncoming();loadEmpHdds();});
+}
+
+function empRejectTransfer(transferId){
+  db.collection('transfers').doc(transferId).update({status:'rejected',rejectedAt:firebase.firestore.FieldValue.serverTimestamp(),rejectedBy:currentUser})
+  .then(function(){showToast('Transfer rejected.','info');loadEmpIncoming();});
+}
+
+// ── EMPLOYEE DECLARATIONS ─────────────────────────────────
+function loadEmpDecls(){
+  document.getElementById('empDeclList').innerHTML='<div class="empty">Loading...</div>';
+  db.collection('declarations').where('employeeEmail','==',currentUser).orderBy('createdAt','desc').get()
+  .then(function(snap){
+    var list=[];
+    snap.forEach(function(doc){list.push(Object.assign({id:doc.id},doc.data()));});
+    if(!list.length){document.getElementById('empDeclList').innerHTML='<div class="empty">No declarations found.</div>';return;}
+    document.getElementById('empDeclList').innerHTML=list.map(function(d){
+      var date=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleDateString('en-IN'):'—';
+      return '<div class="decl-card '+(d.status==='acknowledged'?'acknowledged':d.status==='sent'?'sent':'pending')+'">'+
+        '<div class="decl-header"><span class="decl-id">'+d.declId+'</span>'+sDeclBadge(d.status)+'</div>'+
+        '<div class="decl-serials">💾 '+(d.serialsStr||'—')+'</div>'+
+        '<div class="decl-meta"><span>📦 '+d.quantity+' HDD(s) | '+(d.size||'—')+'</span><span>📅 '+date+'</span></div>'+
+        (d.employeeDetails?renderEmpDetails(d.employeeDetails):'')+
+        (d.status==='sent'?'<div class="action-row"><button class="btn btn-success btn-sm" onclick="showAckForm(''+d.id+'')">✅ Acknowledge Now</button></div>':'')+
+      '</div>';
+    }).join('');
+  });
+}
+
+// ── SAVE PROFILE ──────────────────────────────────────────
+function saveProfile(){
+  var name=document.getElementById('profileName').value.trim();
+  var dept=document.getElementById('profileDept').value.trim();
+  var loc =document.getElementById('profileLocation').value.trim();
+  var btn=document.getElementById('profileSaveBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Saving...';
+  db.collection('users').doc(currentUser).set({name,dept,location:loc,email:currentUser,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
+  .then(function(){
+    empProfile.name=name; empProfile.dept=dept; empProfile.location=loc;
+    document.getElementById('empName').textContent=name;
+    showToast('Profile saved!','success');
+  })
+  .catch(function(err){showToast('Error: '+err.message,'error');})
+  .finally(function(){btn.disabled=false;btn.innerHTML='💾 Save Profile';});
+}
+
+// ── CHANGE PASSWORD ───────────────────────────────────────
+function changePassword(){
+  var np=document.getElementById('newPassword').value;
+  var cp=document.getElementById('confirmNewPassword').value;
+  if(!np){showToast('Enter new password.','error');return;}
+  if(np.length<6){showToast('Password must be at least 6 characters.','error');return;}
+  if(np!==cp){showToast('Passwords do not match.','error');return;}
+  auth.currentUser.updatePassword(np)
+  .then(function(){showToast('Password changed!','success');document.getElementById('newPassword').value='';document.getElementById('confirmNewPassword').value='';})
+  .catch(function(err){showToast(err.message,'error');});
+}
+
 // ── CHECK URL FOR DECLARATION LINK ──────────────────────
 window.addEventListener('load', function() {
   var params   = new URLSearchParams(window.location.search);
@@ -557,43 +1355,165 @@ window.addEventListener('load', function() {
   // Normal login flow
 });
 
-// ── LOGIN ────────────────────────────────────────────────
+// ── AUTH STATE LISTENER ──────────────────────────────────
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    currentUser = user.email.toLowerCase();
+    isAdmin = ADMINS.includes(currentUser);
+    // Log login
+    db.collection('logins').add({
+      email     : currentUser,
+      isAdmin   : isAdmin,
+      uid       : user.uid,
+      timestamp : firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){});
+
+    if (isAdmin) {
+      document.getElementById('adminEmail').textContent = currentUser;
+      if (!document.getElementById('loginPage').classList.contains('hidden'))
+        transitionTo('loginPage','adminPage');
+      setTimeout(loadDeclarations, 300);
+    } else {
+      // Load employee profile
+      db.collection('users').doc(user.uid).get().then(function(doc){
+        var profile = doc.exists ? doc.data() : {};
+        var name    = profile.name || currentUser.split('@')[0];
+        document.getElementById('empNameDisplay').textContent = name;
+        document.getElementById('empEmailDisplay').textContent = currentUser;
+        document.getElementById('userEmail').textContent = currentUser;
+        if (!document.getElementById('loginPage').classList.contains('hidden'))
+          transitionTo('loginPage','empPage');
+        setTimeout(empLoadDashboard, 300);
+      });
+    }
+  }
+});
+
+// ── AUTH TAB SWITCHER ─────────────────────────────────────
+function switchAuthTab(tab) {
+  ['login','signup','reset'].forEach(function(t){
+    document.getElementById('authTab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
+    document.getElementById('auth'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
+  });
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
 function doLogin() {
   var email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    showToast('Enter a valid email.','error'); return;
-  }
+  var pwd   = document.getElementById('loginPassword').value;
+  if (!email) { showToast('Enter your email.','error'); return; }
+  if (!pwd)   { showToast('Enter your password.','error'); return; }
+
   var btn = document.getElementById('loginBtn');
   btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Signing in...';
 
-  isAdmin = ADMINS.includes(email);
-  currentUser = email;
-
-  db.collection('logins').add({ email:email, isAdmin:isAdmin, timestamp:firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){});
-
-  if (isAdmin) {
-    document.getElementById('adminEmail').textContent = email;
-    transitionTo('loginPage','adminPage');
-    setTimeout(loadDeclarations, 300);
-    showToast('Welcome, Admin '+email.split('@')[0]+'!','success');
-  } else {
-    document.getElementById('userEmail').textContent = email;
-    transitionTo('loginPage','userPage');
-    setTimeout(loadMyDeclarations, 300);
-    showToast('Welcome, '+email.split('@')[0]+'!','success');
-  }
-  btn.disabled=false; btn.innerHTML='Access System';
+  auth.signInWithEmailAndPassword(email, pwd)
+  .then(function(cred){
+    showToast('Welcome back!','success');
+  })
+  .catch(function(err){
+    var msg = err.code==='auth/wrong-password'?'Wrong password.':
+              err.code==='auth/user-not-found'?'No account found. Please sign up.':
+              err.code==='auth/too-many-requests'?'Too many attempts. Try later.':
+              err.message;
+    showToast(msg,'error');
+  })
+  .finally(function(){ btn.disabled=false; btn.innerHTML='🔑 Login'; });
 }
 
-document.getElementById('loginEmail').addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+document.addEventListener('DOMContentLoaded', function(){
+  var li = document.getElementById('loginEmail');
+  var lp = document.getElementById('loginPassword');
+  if(li) li.addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+  if(lp) lp.addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+});
 
+// ── SIGNUP ────────────────────────────────────────────────
+function doSignup() {
+  var name    = document.getElementById('signupName').value.trim();
+  var email   = document.getElementById('signupEmail').value.trim().toLowerCase();
+  var dept    = document.getElementById('signupDept').value.trim();
+  var pwd     = document.getElementById('signupPassword').value;
+  var confirm = document.getElementById('signupConfirm').value;
+
+  if (!name)  { showToast('Enter your name.','error'); return; }
+  if (!email) { showToast('Enter your email.','error'); return; }
+  if (pwd.length < 6) { showToast('Password must be at least 6 characters.','error'); return; }
+  if (pwd !== confirm){ showToast('Passwords do not match.','error'); return; }
+
+  var btn = document.getElementById('signupBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Creating account...';
+
+  auth.createUserWithEmailAndPassword(email, pwd)
+  .then(function(cred){
+    // Save profile to Firestore
+    return db.collection('users').doc(cred.user.uid).set({
+      uid        : cred.user.uid,
+      name       : name,
+      email      : email,
+      department : dept,
+      role       : 'employee',
+      createdAt  : firebase.firestore.FieldValue.serverTimestamp()
+    });
+  })
+  .then(function(){
+    showToast('Account created! Welcome, '+name+'!','success');
+  })
+  .catch(function(err){
+    var msg = err.code==='auth/email-already-in-use'?'Email already registered. Please login.':
+              err.code==='auth/weak-password'?'Password is too weak.':
+              err.message;
+    showToast(msg,'error');
+  })
+  .finally(function(){ btn.disabled=false; btn.innerHTML='📝 Create Account'; });
+}
+
+// ── PASSWORD RESET ────────────────────────────────────────
+function doReset() {
+  var email = document.getElementById('resetEmail').value.trim().toLowerCase();
+  if (!email) { showToast('Enter your email.','error'); return; }
+  var btn = document.getElementById('resetBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Sending...';
+
+  auth.sendPasswordResetEmail(email)
+  .then(function(){
+    showToast('Reset link sent to '+email+'! Check your inbox.','success');
+    switchAuthTab('login');
+  })
+  .catch(function(err){
+    showToast(err.code==='auth/user-not-found'?'No account with this email.':err.message,'error');
+  })
+  .finally(function(){ btn.disabled=false; btn.innerHTML='📧 Send Reset Link'; });
+}
+
+// ── PASSWORD TOGGLE ───────────────────────────────────────
+function togglePwd(id) {
+  var inp = document.getElementById(id);
+  inp.type = inp.type==='password'?'text':'password';
+}
+
+// ── PASSWORD STRENGTH ─────────────────────────────────────
+function checkStrength(pwd) {
+  var bar   = document.getElementById('strengthBar');
+  var label = document.getElementById('strengthLabel');
+  if (!pwd) { bar.className='strength-bar'; label.textContent=''; return; }
+  var strong = pwd.length>=8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd);
+  var medium = pwd.length>=6;
+  if (strong) { bar.className='strength-bar strong'; label.textContent='Strong ✅'; label.style.color='var(--success)'; }
+  else if (medium) { bar.className='strength-bar medium'; label.textContent='Medium ⚠️'; label.style.color='var(--warn)'; }
+  else { bar.className='strength-bar weak'; label.textContent='Weak ❌'; label.style.color='var(--error)'; }
+}
+
+// ── LOGOUT ────────────────────────────────────────────────
 function doLogout() {
-  currentUser=''; isAdmin=false;
-  document.getElementById('loginEmail').value='';
-  ['adminPage','userPage','ackPage'].forEach(function(p){
-    if(!document.getElementById(p).classList.contains('hidden')) transitionTo(p,'loginPage');
+  auth.signOut().then(function(){
+    currentUser=''; isAdmin=false;
+    ['adminPage','empPage','userPage','ackPage'].forEach(function(p){
+      var el=document.getElementById(p);
+      if(el && !el.classList.contains('hidden')) transitionTo(p,'loginPage');
+    });
+    showToast('Signed out successfully.','info');
   });
-  showToast('Signed out.','info');
 }
 
 // ── PAGE TRANSITIONS ─────────────────────────────────────
@@ -608,7 +1528,7 @@ function transitionTo(fromId, toId) {
 
 // ── ADMIN TABS ───────────────────────────────────────────
 function aTab(tab) {
-  ['decl','new','hdds','date'].forEach(function(t){
+  ['decl','new','hdds','date','routes'].forEach(function(t){
     document.getElementById('atab-'+t).classList.toggle('active', t===tab);
     document.getElementById('aTab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
   });
@@ -616,11 +1536,12 @@ function aTab(tab) {
 }
 
 function uTab(tab) {
-  ['pending','done'].forEach(function(t){
+  ['pending','transfer','incoming','done'].forEach(function(t){
     document.getElementById('utab-'+t).classList.toggle('active', t===tab);
     document.getElementById('uTab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
   });
-  if(tab==='done') loadDoneDeclarations();
+  if(tab==='done')     loadDoneDeclarations();
+  if(tab==='incoming') loadIncomingTransfers();
 }
 
 // ── SERIAL TAGS ──────────────────────────────────────────
@@ -1142,6 +2063,333 @@ function renderHdds(records) {
       td('<span style="font-family:\'Share Tech Mono\',monospace;font-size:.72rem;color:var(--muted);">'+(r.issuedTo||'—')+'</span>')+
     '</tr>';
   }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// TRANSFER SYSTEM
+// ══════════════════════════════════════════════════════════
+
+// Serial tags for transfer form
+function updateTfrTags() {
+  var raw = document.getElementById('tfrSerialInput').value;
+  var serials = raw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+  document.getElementById('tfrSerialTags').innerHTML = serials.map(function(s){
+    return '<div class="stag" style="border-color:rgba(255,179,71,.3);color:var(--warn);">'+s+'</div>';
+  }).join('');
+}
+
+// Submit a transfer request
+function submitTransfer() {
+  var serialRaw = document.getElementById('tfrSerialInput').value.trim();
+  var toEmail   = document.getElementById('tfrToEmail').value.trim().toLowerCase();
+  var toName    = document.getElementById('tfrToName').value.trim();
+  var location  = document.getElementById('tfrLocation').value.trim();
+  var reason    = document.getElementById('tfrReason').value.trim();
+
+  if (!serialRaw) { showToast('Enter at least one serial number.','error'); return; }
+  if (!toEmail)   { showToast('Enter recipient email.','error'); return; }
+  if (!location)  { showToast('Enter current location.','error'); return; }
+
+  var serials = serialRaw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
+  var btn = document.getElementById('tfrBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Sending...';
+
+  var transferId = 'TFR-'+Date.now().toString(36).toUpperCase();
+  var now = firebase.firestore.FieldValue.serverTimestamp();
+
+  db.collection('transfers').doc(transferId).set({
+    transferId  : transferId,
+    serials     : serials,
+    serialsStr  : serials.join(', '),
+    fromEmail   : currentUser,
+    toEmail     : toEmail,
+    toName      : toName,
+    location    : location,
+    reason      : reason,
+    status      : 'pending',
+    createdAt   : now,
+    updatedAt   : now
+  })
+  .then(function(){
+    // Log transfer event in each HDD history
+    var batch = db.batch();
+    serials.forEach(function(serial){
+      var ref = db.collection('hdd_history').doc();
+      batch.set(ref, {
+        serial      : serial,
+        eventType   : 'transfer_initiated',
+        fromEmail   : currentUser,
+        toEmail     : toEmail,
+        toName      : toName,
+        location    : location,
+        reason      : reason,
+        transferId  : transferId,
+        timestamp   : now
+      });
+    });
+    return batch.commit();
+  })
+  .then(function(){
+    showToast('Transfer request sent to '+toEmail+'!','success');
+    // Reset form
+    document.getElementById('tfrSerialInput').value='';
+    document.getElementById('tfrToEmail').value='';
+    document.getElementById('tfrToName').value='';
+    document.getElementById('tfrLocation').value='';
+    document.getElementById('tfrReason').value='';
+    document.getElementById('tfrSerialTags').innerHTML='';
+  })
+  .catch(function(err){ showToast('Error: '+err.message,'error'); })
+  .finally(function(){ btn.disabled=false; btn.innerHTML='🔄 Initiate Transfer'; });
+}
+
+// Load incoming transfer requests for current user
+function loadIncomingTransfers() {
+  document.getElementById('incomingTransferList').innerHTML='<div class="empty">Loading...</div>';
+  db.collection('transfers')
+    .where('toEmail','==',currentUser)
+    .where('status','==','pending')
+    .orderBy('createdAt','desc').get()
+  .then(function(snap){
+    var transfers=[];
+    snap.forEach(function(doc){ transfers.push(Object.assign({id:doc.id},doc.data())); });
+    if(!transfers.length){
+      document.getElementById('incomingTransferList').innerHTML=
+        '<div class="empty">No incoming transfer requests.</div>'; return;
+    }
+    document.getElementById('incomingTransferList').innerHTML = transfers.map(function(t){
+      var date = t.createdAt&&t.createdAt.toDate?t.createdAt.toDate().toLocaleDateString('en-IN'):'—';
+      return '<div class="decl-card pending">'+
+        '<div class="decl-header">'+
+          '<span class="decl-id">'+t.transferId+'</span>'+
+          '<span class="sbadge s-pending">⏳ Pending Approval</span>'+
+        '</div>'+
+        '<div class="decl-serials">💾 '+t.serialsStr+'</div>'+
+        '<div class="decl-meta">'+
+          '<span>👤 From: '+t.fromEmail+'</span>'+
+          '<span>📍 Location: '+(t.location||'—')+'</span>'+
+          '<span style="font-size:.72rem;color:var(--muted);">Requested: '+date+'</span>'+
+        '</div>'+
+        (t.reason?'<div style="font-size:.8rem;color:var(--muted);margin:6px 0;">📝 '+t.reason+'</div>':'')+
+        '<div class="action-row">'+
+          '<button class="btn btn-success btn-sm" onclick="approveTransfer(''+t.id+'',''+t.fromEmail+'',''+t.serialsStr+'',''+t.location+'')">✅ Accept</button>'+
+          '<button class="btn btn-error btn-sm" onclick="rejectTransfer(''+t.id+'')">❌ Reject</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  })
+  .catch(function(err){ document.getElementById('incomingTransferList').innerHTML='<div class="empty">Error: '+err.message+'</div>'; });
+}
+
+// Approve a transfer
+function approveTransfer(transferId, fromEmail, serialsStr, location) {
+  var serials = serialsStr.split(',').map(function(s){return s.trim().toUpperCase();});
+  var now = firebase.firestore.FieldValue.serverTimestamp();
+
+  var batch = db.batch();
+
+  // Update transfer status
+  batch.update(db.collection('transfers').doc(transferId), {
+    status      : 'approved',
+    approvedAt  : now,
+    approvedBy  : currentUser,
+    updatedAt   : now
+  });
+
+  // Update each HDD record — new holder
+  serials.forEach(function(serial){
+    batch.set(db.collection('hdds').doc(serial), {
+      issuedTo      : currentUser,
+      lastLocation  : location,
+      updatedAt     : now,
+      lastUpdatedBy : currentUser
+    }, {merge:true});
+
+    // Log approval event in history
+    var ref = db.collection('hdd_history').doc();
+    batch.set(ref, {
+      serial      : serial,
+      eventType   : 'transfer_approved',
+      fromEmail   : fromEmail,
+      toEmail     : currentUser,
+      location    : location,
+      transferId  : transferId,
+      timestamp   : now
+    });
+  });
+
+  batch.commit()
+  .then(function(){
+    showToast('Transfer accepted! HDDs are now assigned to you.','success');
+    loadIncomingTransfers();
+  })
+  .catch(function(err){ showToast('Error: '+err.message,'error'); });
+}
+
+// Reject a transfer
+function rejectTransfer(transferId) {
+  var now = firebase.firestore.FieldValue.serverTimestamp();
+  db.collection('transfers').doc(transferId).update({
+    status:'rejected', rejectedAt:now, rejectedBy:currentUser, updatedAt:now
+  })
+  .then(function(){
+    showToast('Transfer rejected.','info');
+    loadIncomingTransfers();
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// HDD ROUTE MAP (Admin)
+// ══════════════════════════════════════════════════════════
+
+function loadHddRoute() {
+  var serial = document.getElementById('routeSerial').value.trim().toUpperCase();
+  if (!serial) { showToast('Enter a serial number.','error'); return; }
+
+  var el = document.getElementById('routeResult');
+  el.innerHTML = '<div class="empty">Loading route...</div>';
+
+  // Load HDD current record + full history
+  Promise.all([
+    db.collection('hdds').doc(serial).get(),
+    db.collection('hdd_history').where('serial','==',serial).orderBy('timestamp','asc').get()
+  ])
+  .then(function(results){
+    var hddDoc  = results[0];
+    var histSnap= results[1];
+
+    var hdd = hddDoc.exists ? hddDoc.data() : null;
+    var events = [];
+    histSnap.forEach(function(doc){ events.push(Object.assign({id:doc.id},doc.data())); });
+
+    if(!hdd && !events.length){
+      el.innerHTML='<div class="empty">No records found for serial: '+serial+'</div>'; return;
+    }
+
+    renderRouteMap(serial, hdd, events);
+  })
+  .catch(function(err){ el.innerHTML='<div class="empty">Error: '+err.message+'</div>'; });
+}
+
+function renderRouteMap(serial, hdd, events) {
+  var el = document.getElementById('routeResult');
+
+  // Build timeline stops
+  var stops = [];
+
+  // First event = initial issue
+  if (hdd) {
+    stops.push({
+      type     : 'issued',
+      person   : hdd.issuedTo || '—',
+      location : hdd.lastLocation || hdd.deptLocation || '—',
+      date     : '—',
+      label    : '📋 Initial Issue',
+      color    : 'var(--accent)'
+    });
+  }
+
+  // Transfer events
+  events.forEach(function(e){
+    var date = e.timestamp&&e.timestamp.toDate?e.timestamp.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    if(e.eventType==='transfer_initiated'){
+      stops.push({
+        type     : 'transfer',
+        person   : e.fromEmail,
+        toEmail  : e.toEmail,
+        toName   : e.toName||e.toEmail,
+        location : e.location||'—',
+        date     : date,
+        reason   : e.reason||'',
+        label    : '🔄 Transfer Initiated',
+        color    : 'var(--warn)'
+      });
+    } else if(e.eventType==='transfer_approved'){
+      stops.push({
+        type     : 'approved',
+        person   : e.toEmail,
+        fromEmail: e.fromEmail,
+        location : e.location||'—',
+        date     : date,
+        label    : '✅ Transfer Accepted',
+        color    : 'var(--success)'
+      });
+    }
+  });
+
+  // Build HTML
+  var html =
+    // HDD Info Card
+    '<div class="panel" style="margin-bottom:16px;">'+
+      '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'+
+        '<div style="font-family:'Share Tech Mono',monospace;font-size:1.1rem;color:var(--accent);font-weight:700;">'+serial+'</div>'+
+        (hdd?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 8px;font-size:.72rem;font-family:'Share Tech Mono',monospace;color:var(--accent);">'+(hdd.size||'—')+'</span>':'') +
+        (hdd?(hdd.status==='Used'?'<span class="sbadge s-used">● Used</span>':'<span class="sbadge s-unused">○ Not Used</span>'):'') +
+      '</div>'+
+      (hdd?'<div style="font-size:.8rem;color:var(--muted);margin-top:8px;display:flex;gap:16px;flex-wrap:wrap;">'+
+        '<span>👤 Current holder: <strong style="color:var(--text);">'+(hdd.issuedTo||'—')+'</strong></span>'+
+        '<span>📍 Location: '+(hdd.lastLocation||hdd.deptLocation||'—')+'</span>'+
+        '<span>🔬 Examiner: '+(hdd.examiner||'—')+'</span>'+
+      '</div>':'') +
+    '</div>'+
+
+    // Route Timeline
+    '<div class="panel">'+
+      '<div style="font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;margin-bottom:20px;font-weight:700;">📍 TRAVEL ROUTE</div>'+
+
+      (stops.length === 0
+        ? '<div class="empty">No transfer history yet.</div>'
+        : stops.map(function(stop, idx){
+            var isLast = idx === stops.length - 1;
+            return (
+              '<div style="display:flex;gap:0;position:relative;">'+
+                // Left column: dot + line
+                '<div style="display:flex;flex-direction:column;align-items:center;margin-right:16px;flex-shrink:0;">'+
+                  '<div style="width:14px;height:14px;border-radius:50%;background:'+stop.color+';border:2px solid var(--bg);box-shadow:0 0 10px '+stop.color+';flex-shrink:0;margin-top:3px;"></div>'+
+                  (!isLast?'<div style="width:2px;flex:1;min-height:40px;background:linear-gradient(to bottom,'+stop.color+',var(--border));margin:4px 0;"></div>':'')+
+                '</div>'+
+                // Right column: content
+                '<div style="flex:1;padding-bottom:'+(isLast?'0':'20px')+';">'+
+                  '<div style="font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:'+stop.color+';font-family:'Share Tech Mono',monospace;margin-bottom:4px;">'+stop.label+'</div>'+
+                  '<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">'+
+                    (stop.type==='transfer'
+                      ? '<div style="font-size:.88rem;color:var(--text);margin-bottom:4px;">'+
+                          '<strong>'+stop.person+'</strong>'+
+                          ' <span style="color:var(--warn);font-family:'Share Tech Mono',monospace;">→</span> '+
+                          '<strong>'+(stop.toName||stop.toEmail)+'</strong>'+
+                        '</div>'
+                      : '<div style="font-size:.88rem;color:var(--text);margin-bottom:4px;"><strong>'+(stop.person||'—')+'</strong></div>'
+                    )+
+                    '<div style="font-size:.76rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;">'+
+                      '<span>📍 '+stop.location+'</span>'+
+                      (stop.date!=='—'?'<span>🕐 '+stop.date+'</span>':'')+
+                      (stop.reason?'<span>📝 '+stop.reason+'</span>':'')+
+                    '</div>'+
+                  '</div>'+
+                '</div>'+
+              '</div>'
+            );
+          }).join('')
+      )+
+    '</div>'+
+
+    // Summary path
+    (stops.length > 1
+      ? '<div style="background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:10px;padding:14px 16px;margin-top:14px;">'+
+          '<div style="font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:'Share Tech Mono',monospace;margin-bottom:8px;">FULL PATH</div>'+
+          '<div style="font-family:'Share Tech Mono',monospace;font-size:.76rem;color:var(--text);line-height:2;">'+
+            stops.filter(function(s){return s.type==='issued'||s.type==='approved';})
+                 .map(function(s){
+                   return '<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:3px 9px;color:var(--accent);">'+
+                     (s.person.includes('@')?s.person.split('@')[0]:s.person)+
+                   '</span>';
+                 }).join(' <span style="color:var(--warn);">→</span> ')+
+          '</div>'+
+        '</div>'
+      : ''
+    );
+
+  el.innerHTML = html;
 }
 
 // ── RESET FORMS ──────────────────────────────────────────
