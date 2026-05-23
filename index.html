@@ -1,4 +1,4 @@
-<!-- HDD Manager v5.3 -->
+<!-- HDD Manager v5.4 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -924,7 +924,7 @@ select option{background:var(--card);}
 
 <!-- ════════════ FIREBASE + LOGIC ════════════ -->
 <script>
-// ── FIREBASE CONFIG ──────────────────────────────────────
+// -- FIREBASE CONFIG --------------------------------------
 const firebaseConfig = {
   apiKey            : "AIzaSyD1e3IjNeMuzsleeCsqVeBrQmd2oKe3fVU",
   authDomain        : "hdd--details.firebaseapp.com",
@@ -938,20 +938,20 @@ firebase.initializeApp(firebaseConfig);
 var db   = firebase.firestore();
 var auth = firebase.auth();
 
-// ── EMAILJS CONFIG ────────────────────────────────────
-// Sign up free at emailjs.com → get these 3 values
+// -- EMAILJS CONFIG ------------------------------------
+// Sign up free at emailjs.com -> get these 3 values
 var EMAILJS_SERVICE_ID  = 'service_10btpnn';
 var EMAILJS_TEMPLATE_ID = 'template_ym7kscl';
 var EMAILJS_PUBLIC_KEY  = 'j9zfKbh-Rtse7dGom';
 
-// ── APPS SCRIPT BACKUP URL ───────────────────────────
+// -- APPS SCRIPT BACKUP URL ---------------------------
 // Paste your Apps Script Web App URL here as backup
 var APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
 
 // Init EmailJS
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
-// ── ADMIN LIST ───────────────────────────────────────────
+// -- ADMIN LIST -------------------------------------------
 var ADMINS = [
   "ananthajith.pcvita@gmail.com",
   "pulkitdubey.pcvita@gmail.com",
@@ -969,9 +969,9 @@ var activeDeclId = "";
 var activeEmailDeclId = "";
 
 
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 // AUTH HELPERS
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 function switchAuthTab(tab) {
   document.getElementById('authLogin').style.display  = tab==='login'  ? 'block' : 'none';
   document.getElementById('authSignup').style.display = tab==='signup' ? 'block' : 'none';
@@ -986,7 +986,7 @@ function togglePwd(id) {
   el.type = el.type==='password' ? 'text' : 'password';
 }
 
-// ── FIREBASE AUTH STATE LISTENER ──────────────────────────
+// -- FIREBASE AUTH STATE LISTENER --------------------------
 auth.onAuthStateChanged(function(user) {
   if (user) {
     currentUser = user.email.toLowerCase();
@@ -1002,7 +1002,7 @@ auth.onAuthStateChanged(function(user) {
   }
 });
 
-// ── SIGNUP ────────────────────────────────────────────────
+// -- SIGNUP ------------------------------------------------
 function doSignup() {
   var name     = document.getElementById('signupName').value.trim();
   var email    = document.getElementById('signupEmail').value.trim().toLowerCase();
@@ -1044,7 +1044,7 @@ function doSignup() {
   .finally(function(){ btn.disabled=false; btn.innerHTML='Create Account'; });
 }
 
-// ── LOGIN ─────────────────────────────────────────────────
+// -- LOGIN -------------------------------------------------
 function doLogin() {
   var email    = document.getElementById('loginEmail').value.trim().toLowerCase();
   var password = document.getElementById('loginPassword').value;
@@ -1087,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 });
 
-// ── FORGOT PASSWORD ───────────────────────────────────────
+// -- FORGOT PASSWORD ---------------------------------------
 function forgotPassword() {
   var email = document.getElementById('loginEmail').value.trim();
   if (!email) { showToast('Enter your email first.','warn'); return; }
@@ -1096,7 +1096,7 @@ function forgotPassword() {
   .catch(function(err){ showToast(err.message,'error'); });
 }
 
-// ── LOGOUT ────────────────────────────────────────────────
+// -- LOGOUT ------------------------------------------------
 function doLogout() {
   auth.signOut().then(function() {
     currentUser=''; isAdmin=false;
@@ -1110,7 +1110,7 @@ function doLogout() {
   });
 }
 
-// ── LOAD USER PROFILE → show employee dashboard ───────────
+// -- LOAD USER PROFILE -> show employee dashboard -----------
 function loadUserProfile(user) {
   currentUser = user.email.toLowerCase();
   db.collection('users').doc(currentUser).get()
@@ -1134,9 +1134,9 @@ function loadUserProfile(user) {
 var empProfile  = {};
 var allEmpHdds  = [];
 
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 // EMPLOYEE DASHBOARD FUNCTIONS
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 function eTab(tab) {
   ['hdds','transfer','incoming','decls','profile'].forEach(function(t){
     document.getElementById('etab-'+t).classList.toggle('active', t===tab);
@@ -1146,7 +1146,7 @@ function eTab(tab) {
   if(tab==='decls')    loadEmpDecls();
 }
 
-// ── MY HDDs ───────────────────────────────────────────────
+// -- MY HDDs -----------------------------------------------
 function loadEmpHdds() {
   document.getElementById('empHddList').innerHTML='<div class="empty">Loading...</div>';
   db.collection('hdds').where('issuedTo','==',currentUser).get()
@@ -1202,7 +1202,7 @@ function renderEmpHdds(hdds) {
   }).join('');
 }
 
-// ── EMPLOYEE TRANSFER ─────────────────────────────────────
+// -- EMPLOYEE TRANSFER -------------------------------------
 function updateEmpTfrTags(){
   var raw=document.getElementById('empTfrSerial').value;
   var s=raw.split(',').map(function(x){return x.trim().toUpperCase();}).filter(Boolean);
@@ -1251,7 +1251,7 @@ function empSubmitTransfer() {
   .finally(function(){btn.disabled=false;btn.innerHTML='🔄 Initiate Transfer';});
 }
 
-// ── INCOMING TRANSFERS ────────────────────────────────────
+// -- INCOMING TRANSFERS ------------------------------------
 function loadEmpIncoming(){
   document.getElementById('empIncomingList').innerHTML='<div class="empty">Loading...</div>';
   db.collection('transfers').where('toEmail','==',currentUser).where('status','==','pending').orderBy('createdAt','desc').get()
@@ -1293,7 +1293,7 @@ function empRejectTransfer(transferId){
   .then(function(){showToast('Transfer rejected.','info');loadEmpIncoming();});
 }
 
-// ── EMPLOYEE DECLARATIONS ─────────────────────────────────
+// -- EMPLOYEE DECLARATIONS ---------------------------------
 function loadEmpDecls(){
   document.getElementById('empDeclList').innerHTML='<div class="empty">Loading...</div>';
   db.collection('declarations').where('employeeEmail','==',currentUser).orderBy('createdAt','desc').get()
@@ -1314,7 +1314,7 @@ function loadEmpDecls(){
   });
 }
 
-// ── SAVE PROFILE ──────────────────────────────────────────
+// -- SAVE PROFILE ------------------------------------------
 function saveProfile(){
   var name=document.getElementById('profileName').value.trim();
   var dept=document.getElementById('profileDept').value.trim();
@@ -1331,7 +1331,7 @@ function saveProfile(){
   .finally(function(){btn.disabled=false;btn.innerHTML='💾 Save Profile';});
 }
 
-// ── CHANGE PASSWORD ───────────────────────────────────────
+// -- CHANGE PASSWORD ---------------------------------------
 function changePassword(){
   var np=document.getElementById('newPassword').value;
   var cp=document.getElementById('confirmNewPassword').value;
@@ -1343,19 +1343,19 @@ function changePassword(){
   .catch(function(err){showToast(err.message,'error');});
 }
 
-// ── CHECK URL FOR DECLARATION LINK ──────────────────────
+// -- CHECK URL FOR DECLARATION LINK ----------------------
 window.addEventListener('load', function() {
   var params   = new URLSearchParams(window.location.search);
   var declId   = params.get('decl');
   if (declId) {
-    // Someone clicked a declaration link — show ack page directly
+    // Someone clicked a declaration link - show ack page directly
     showAckPage(declId);
     return;
   }
   // Normal login flow
 });
 
-// ── AUTH STATE LISTENER ──────────────────────────────────
+// -- AUTH STATE LISTENER ----------------------------------
 auth.onAuthStateChanged(function(user) {
   if (user) {
     currentUser = user.email.toLowerCase();
@@ -1389,7 +1389,7 @@ auth.onAuthStateChanged(function(user) {
   }
 });
 
-// ── AUTH TAB SWITCHER ─────────────────────────────────────
+// -- AUTH TAB SWITCHER -------------------------------------
 function switchAuthTab(tab) {
   ['login','signup','reset'].forEach(function(t){
     document.getElementById('authTab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===tab);
@@ -1397,7 +1397,7 @@ function switchAuthTab(tab) {
   });
 }
 
-// ── LOGIN ─────────────────────────────────────────────────
+// -- LOGIN -------------------------------------------------
 function doLogin() {
   var email = document.getElementById('loginEmail').value.trim().toLowerCase();
   var pwd   = document.getElementById('loginPassword').value;
@@ -1428,7 +1428,7 @@ document.addEventListener('DOMContentLoaded', function(){
   if(lp) lp.addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
 });
 
-// ── SIGNUP ────────────────────────────────────────────────
+// -- SIGNUP ------------------------------------------------
 function doSignup() {
   var name    = document.getElementById('signupName').value.trim();
   var email   = document.getElementById('signupEmail').value.trim().toLowerCase();
@@ -1468,7 +1468,7 @@ function doSignup() {
   .finally(function(){ btn.disabled=false; btn.innerHTML='📝 Create Account'; });
 }
 
-// ── PASSWORD RESET ────────────────────────────────────────
+// -- PASSWORD RESET ----------------------------------------
 function doReset() {
   var email = document.getElementById('resetEmail').value.trim().toLowerCase();
   if (!email) { showToast('Enter your email.','error'); return; }
@@ -1486,13 +1486,13 @@ function doReset() {
   .finally(function(){ btn.disabled=false; btn.innerHTML='📧 Send Reset Link'; });
 }
 
-// ── PASSWORD TOGGLE ───────────────────────────────────────
+// -- PASSWORD TOGGLE ---------------------------------------
 function togglePwd(id) {
   var inp = document.getElementById(id);
   inp.type = inp.type==='password'?'text':'password';
 }
 
-// ── PASSWORD STRENGTH ─────────────────────────────────────
+// -- PASSWORD STRENGTH -------------------------------------
 function checkStrength(pwd) {
   var bar   = document.getElementById('strengthBar');
   var label = document.getElementById('strengthLabel');
@@ -1504,7 +1504,7 @@ function checkStrength(pwd) {
   else { bar.className='strength-bar weak'; label.textContent='Weak ❌'; label.style.color='var(--error)'; }
 }
 
-// ── LOGOUT ────────────────────────────────────────────────
+// -- LOGOUT ------------------------------------------------
 function doLogout() {
   auth.signOut().then(function(){
     currentUser=''; isAdmin=false;
@@ -1516,7 +1516,7 @@ function doLogout() {
   });
 }
 
-// ── PAGE TRANSITIONS ─────────────────────────────────────
+// -- PAGE TRANSITIONS -------------------------------------
 function transitionTo(fromId, toId) {
   var from=document.getElementById(fromId), to=document.getElementById(toId);
   from.style.opacity='0'; from.style.transform='translateY(-30px)';
@@ -1526,7 +1526,7 @@ function transitionTo(fromId, toId) {
   },400);
 }
 
-// ── ADMIN TABS ───────────────────────────────────────────
+// -- ADMIN TABS -------------------------------------------
 function aTab(tab) {
   ['decl','new','hdds','date','routes'].forEach(function(t){
     document.getElementById('atab-'+t).classList.toggle('active', t===tab);
@@ -1544,7 +1544,7 @@ function uTab(tab) {
   if(tab==='incoming') loadIncomingTransfers();
 }
 
-// ── SERIAL TAGS ──────────────────────────────────────────
+// -- SERIAL TAGS ------------------------------------------
 function updateIssueSerials() {
   var raw = document.getElementById('issueSerialInput').value;
   var serials = raw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
@@ -1570,7 +1570,7 @@ function updateADateTags() {
   }).join('');
 }
 
-// ── CREATE DECLARATION ───────────────────────────────────
+// -- CREATE DECLARATION -----------------------------------
 function createDeclaration() {
   var empEmail = document.getElementById('issueEmail').value.trim().toLowerCase();
   var empName  = document.getElementById('issueName').value.trim();
@@ -1619,7 +1619,7 @@ function createDeclaration() {
   .finally(function(){ btn.disabled=false; btn.innerHTML='📋 Create Declaration &amp; Generate Link'; });
 }
 
-// ── EMAIL MODAL ──────────────────────────────────────────
+// -- EMAIL MODAL ------------------------------------------
 function openEmailModal(declId, empEmail, empName, serials, link) {
   activeEmailDeclId = declId;
   document.getElementById('emailModalInfo').textContent = declId + ' — ' + serials.length + ' HDD(s) — ' + (empName||empEmail);
@@ -1682,7 +1682,7 @@ function sendEmail() {
       issue_date   : new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'long',year:'numeric'})
     };
 
-    // ── PRIMARY: EmailJS ────────────────────────────────
+    // -- PRIMARY: EmailJS --------------------------------
     emailjs.send(
       EMAILJS_SERVICE_ID,
       EMAILJS_TEMPLATE_ID,
@@ -1699,7 +1699,7 @@ function sendEmail() {
       console.warn('EmailJS failed:', err);
       showToast('EmailJS failed — trying backup...', 'warn');
 
-      // ── BACKUP: Google Apps Script ──────────────────
+      // -- BACKUP: Google Apps Script ------------------
       if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL') {
         fetch(APPS_SCRIPT_URL, {
           method : 'POST',
@@ -1729,7 +1729,7 @@ function sendEmail() {
           sendBtn.innerHTML = '📧 Open Email Client';
         });
       } else {
-        // No Apps Script — mailto fallback
+        // No Apps Script - mailto fallback
         window.open('mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body), '_blank');
         updateDeclSentStatus(declId, to);
         sendBtn.disabled = false;
@@ -1749,7 +1749,7 @@ function updateDeclSentStatus(declId, to) {
   }).then(function() { loadDeclarations(); });
 }
 
-// ── LOAD DECLARATIONS (ADMIN) ────────────────────────────
+// -- LOAD DECLARATIONS (ADMIN) ----------------------------
 function loadDeclarations() {
   document.getElementById('declList').innerHTML='<div class="empty">Loading...</div>';
   db.collection('declarations').orderBy('createdAt','desc').get()
@@ -1831,7 +1831,7 @@ function sDeclBadge(status) {
   return map[status]||'<span class="sbadge">'+status+'</span>';
 }
 
-// ── EMPLOYEE: LOAD MY DECLARATIONS ──────────────────────
+// -- EMPLOYEE: LOAD MY DECLARATIONS ----------------------
 function loadMyDeclarations() {
   document.getElementById('pendingDeclList').innerHTML='<div class="empty">Loading...</div>';
   db.collection('declarations').where('employeeEmail','==',currentUser).where('status','in',['pending','sent']).orderBy('createdAt','desc').get()
@@ -1871,7 +1871,7 @@ function loadDoneDeclarations() {
   });
 }
 
-// ── ACKNOWLEDGE PAGE (via link) ──────────────────────────
+// -- ACKNOWLEDGE PAGE (via link) --------------------------
 function showAckPage(declId) {
   // Hide login, show ack page directly
   document.getElementById('loginPage').classList.add('hidden');
@@ -1938,7 +1938,7 @@ function selAckP(el,val){
   el.classList.add('active'); document.getElementById('ackPurpose').value=val;
 }
 
-// ── SUBMIT ACKNOWLEDGEMENT ───────────────────────────────
+// -- SUBMIT ACKNOWLEDGEMENT -------------------------------
 function submitAck() {
   if(!activeDeclId){ showToast('No active declaration.','error'); return; }
 
@@ -1999,7 +1999,7 @@ function submitAck() {
   .finally(function(){ btn.disabled=false; btn.innerHTML='✅ Acknowledge Receipt &amp; Submit'; });
 }
 
-// ── ADMIN: UPDATE USED DATE ──────────────────────────────
+// -- ADMIN: UPDATE USED DATE ------------------------------
 function adminUpdateDate() {
   var serialRaw=document.getElementById('aDateSerial').value.trim();
   var usedDate=document.getElementById('aUpdateDate').value;
@@ -2018,7 +2018,7 @@ function adminUpdateDate() {
   .finally(function(){ btn.disabled=false; btn.innerHTML='📅 Update Used Date'; });
 }
 
-// ── ADMIN: HDD RECORDS ───────────────────────────────────
+// -- ADMIN: HDD RECORDS -----------------------------------
 function loadHdds() {
   document.getElementById('hddTbody').innerHTML='<tr><td colspan="8"><div class="empty">Loading...</div></td></tr>';
   db.collection('hdds').orderBy('updatedAt','desc').get()
@@ -2065,9 +2065,9 @@ function renderHdds(records) {
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 // TRANSFER SYSTEM
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 
 // Serial tags for transfer form
 function updateTfrTags() {
@@ -2196,7 +2196,7 @@ function approveTransfer(transferId, fromEmail, serialsStr, location) {
     updatedAt   : now
   });
 
-  // Update each HDD record — new holder
+  // Update each HDD record - new holder
   serials.forEach(function(serial){
     batch.set(db.collection('hdds').doc(serial), {
       issuedTo      : currentUser,
@@ -2238,9 +2238,9 @@ function rejectTransfer(transferId) {
   });
 }
 
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 // HDD ROUTE MAP (Admin)
-// ══════════════════════════════════════════════════════════
+// ==========================================================
 
 function loadHddRoute() {
   var serial = document.getElementById('routeSerial').value.trim().toUpperCase();
@@ -2392,7 +2392,7 @@ function renderRouteMap(serial, hdd, events) {
   el.innerHTML = html;
 }
 
-// ── RESET FORMS ──────────────────────────────────────────
+// -- RESET FORMS ------------------------------------------
 function resetIssueForm() {
   ['issueEmail','issueName','issueSerialInput','issueSize','issueDate','issueAdminNote'].forEach(function(id){ document.getElementById(id).value=''; });
   document.getElementById('issueSerialTags').innerHTML='';
@@ -2400,14 +2400,14 @@ function resetIssueForm() {
   document.getElementById('issueQty').value='';
 }
 
-// ── TOAST ────────────────────────────────────────────────
+// -- TOAST ------------------------------------------------
 function showToast(msg,type){
   var t=document.getElementById('toast');
   t.textContent=msg; t.className='toast '+type+' show';
   setTimeout(function(){t.className='toast';},4000);
 }
 
-// ── PWA ──────────────────────────────────────────────────
+// -- PWA --------------------------------------------------
 var deferredPrompt;
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(function(){});
