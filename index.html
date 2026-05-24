@@ -1,4 +1,4 @@
-<!-- HDD Manager v5.5 build:1779615373 -->
+<!-- HDD Manager v5.6 build:1779638476 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2026,7 +2026,7 @@ function adminUpdateDate() {
 // -- ADMIN: HDD RECORDS -----------------------------------
 function loadHdds() {
   document.getElementById('hddTbody').innerHTML='<tr><td colspan="8"><div class="empty">Loading...</div></td></tr>';
-  db.collection('hdds').orderBy('updatedAt','desc').get()
+  db.collection('hdds').get()
   .then(function(snap){
     allHdds=[];
     snap.forEach(function(doc){ allHdds.push(Object.assign({id:doc.id},doc.data())); });
@@ -2047,8 +2047,10 @@ function filterHdds() {
   var sz=document.getElementById('hSizeF').value;
   var st=document.getElementById('hStatF').value;
   renderHdds(allHdds.filter(function(r){
-    var mQ=!q||(r.serialNumber||'').toLowerCase().includes(q)||(r.examiner||'').toLowerCase().includes(q)||(r.department||'').toLowerCase().includes(q)||(r.issuedTo||'').toLowerCase().includes(q);
-    return mQ&&(!sz||r.size===sz)&&(!st||r.status===st);
+    var mQ=!q||(r.serialNumber||'').toLowerCase().includes(q)||(r.examiner||'').toLowerCase().includes(q)||(r.department||'').toLowerCase().includes(q)||(r.issuedTo||'').toLowerCase().includes(q)||(r.id||'').toLowerCase().includes(q);
+    var mSz=!sz||(r.size||'').trim()===sz.trim();
+    var mSt=!st||(r.status||'').trim()===st.trim();
+    return mQ && mSz && mSt;
   }));
 }
 
