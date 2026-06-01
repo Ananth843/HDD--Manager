@@ -1,4 +1,4 @@
-<!-- HDD Manager v6.1 build:1780296471 -->
+<!-- HDD Manager v6.2 build:1780346601 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1036,7 +1036,7 @@ var APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
 // -- FCM VAPID KEY -------------------------------------------
 // Get this from Firebase Console -> Project Settings -> Cloud Messaging
 // -> Web Push certificates -> Generate key pair -> copy the Key pair
-var FCM_VAPID_KEY = 'BIo5sWAqdm6uZY74BgoYaI8N8otJX34IUf7t2PqR396T_YIzhImaVbfiu78AEt68CfiPG4Xwkbp2_EALCd6NrpU';
+var FCM_VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
 
 // Init EmailJS
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -1280,7 +1280,7 @@ function renderEmpHdds(hdds) {
   var el=document.getElementById('empHddList');
   if(!hdds.length){el.innerHTML='<div class="empty">No HDDs assigned to you yet.</div>';return;}
   el.innerHTML=hdds.map(function(h){
-    var stBadge=h.status==='Used'?'<span class="sbadge s-used">● Used</span>':'<span class="sbadge s-unused">○ Not Used</span>';
+    var stBadge=h.status==='Used'?'<span class="sbadge s-used">* Used</span>':'<span class="sbadge s-unused">o Not Used</span>';
     var szBadge=h.size?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:.68rem;color:var(--accent);">'+h.size+'</span>':'';
     return '<div class="decl-card '+(h.status==='Used'?'acknowledged':'pending')+'">'+
       '<div class="decl-header">'+
@@ -1288,13 +1288,13 @@ function renderEmpHdds(hdds) {
         '<div style="display:flex;gap:6px;">'+szBadge+stBadge+'</div>'+
       '</div>'+
       '<div class="decl-meta">'+
-        (h.usedDate?'<span>📅 Used: '+h.usedDate+'</span>':'')+
-        (h.department?'<span>🏢 '+h.department+'</span>':'')+
-        (h.deptLocation?'<span>📍 '+h.deptLocation+'</span>':'')+
-        (h.examiner?'<span>👤 '+h.examiner+'</span>':'')+
-        (h.purpose?'<span>🎯 '+h.purpose+'</span>':'')+
+        (h.usedDate?'<span>[DATE] Used: '+h.usedDate+'</span>':'')+
+        (h.department?'<span>[DEPT] '+h.department+'</span>':'')+
+        (h.deptLocation?'<span>[LOC] '+h.deptLocation+'</span>':'')+
+        (h.examiner?'<span>[USER] '+h.examiner+'</span>':'')+
+        (h.purpose?'<span>[AIM] '+h.purpose+'</span>':'')+
       '</div>'+
-      (h.lastLocation?'<div style="font-size:.76rem;color:var(--muted);margin-top:4px;">📍 Last location: '+h.lastLocation+'</div>':'')+
+      (h.lastLocation?'<div style="font-size:.76rem;color:var(--muted);margin-top:4px;">[LOC] Last location: '+h.lastLocation+'</div>':'')+
     '</div>';
   }).join('');
 }
@@ -1351,7 +1351,7 @@ function empSubmitTransfer() {
     document.getElementById('empTfrTags').innerHTML='';
   })
   .catch(function(err){showToast('Error: '+err.message,'error');})
-  .finally(function(){btn.disabled=false;btn.innerHTML='🔄 Initiate Transfer';});
+  .finally(function(){btn.disabled=false;btn.innerHTML='[SYNC] Initiate Transfer';});
 }
 
 // -- INCOMING TRANSFERS ------------------------------------
@@ -1363,15 +1363,15 @@ function loadEmpIncoming(){
     snap.forEach(function(doc){list.push(Object.assign({id:doc.id},doc.data()));});
     if(!list.length){document.getElementById('empIncomingList').innerHTML='<div class="empty">No pending transfers.</div>';return;}
     document.getElementById('empIncomingList').innerHTML=list.map(function(t){
-      var date=t.createdAt&&t.createdAt.toDate?t.createdAt.toDate().toLocaleDateString('en-IN'):'—';
+      var date=t.createdAt&&t.createdAt.toDate?t.createdAt.toDate().toLocaleDateString('en-IN'):'';
       var html='<div class="decl-card pending">';
-      html+='<div class="decl-header"><span class="decl-id">'+t.transferId+'</span><span class="sbadge s-pending">⏳ Pending</span></div>';
-      html+='<div class="decl-serials">💾 '+t.serialsStr+'</div>';
-      html+='<div class="decl-meta"><span>👤 From: '+(t.fromName||t.fromEmail)+'</span><span>📍 '+(t.location||'—')+'</span><span>'+date+'</span></div>';
-      if(t.reason) html+='<div style="font-size:.78rem;color:var(--muted);">📝 '+t.reason+'</div>';
+      html+='<div class="decl-header"><span class="decl-id">'+t.transferId+'</span><span class="sbadge s-pending">[WAIT] Pending</span></div>';
+      html+='<div class="decl-serials">[HDD] '+t.serialsStr+'</div>';
+      html+='<div class="decl-meta"><span>[USER] From: '+(t.fromName||t.fromEmail)+'</span><span>[LOC] '+(t.location||'')+'</span><span>'+date+'</span></div>';
+      if(t.reason) html+='<div style="font-size:.78rem;color:var(--muted);">[NOTE] '+t.reason+'</div>';
       html+='<div class="action-row">';
-      html+='<button class="btn btn-success btn-sm" onclick="empApproveTransfer(\'' +t.id+ '\',\'' +t.fromEmail+ '\',\'' +t.serialsStr+ '\',\'' +(t.location||'')+ '\')">✅ Accept</button>';
-      html+='<button class="btn btn-error btn-sm" onclick="empRejectTransfer(\'' +t.id+ '\')" >❌ Reject</button>';
+      html+='<button class="btn btn-success btn-sm" onclick="empApproveTransfer('+JSON.stringify(t.id)+','+JSON.stringify(t.fromEmail)+','+JSON.stringify(t.serialsStr)+','+JSON.stringify(t.location||'')+')" >Accept</button>';
+      html+='<button class="btn btn-error btn-sm" onclick="empRejectTransfer('+JSON.stringify(t.id)+')" >Reject</button>';
       html+='</div></div>';
       return html;
     }).join('');
@@ -1437,7 +1437,7 @@ function saveProfile(){
     showToast('Profile saved!','success');
   })
   .catch(function(err){showToast('Error: '+err.message,'error');})
-  .finally(function(){btn.disabled=false;btn.innerHTML='💾 Save Profile';});
+  .finally(function(){btn.disabled=false;btn.innerHTML='[HDD] Save Profile';});
 }
 
 // -- CHANGE PASSWORD ---------------------------------------
@@ -1530,7 +1530,7 @@ function doLogin() {
               err.message;
     showToast(msg,'error');
   })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='🔑 Login'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='[KEY] Login'; });
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -1577,7 +1577,7 @@ function doSignup() {
               err.message;
     showToast(msg,'error');
   })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='📝 Create Account'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='[NOTE] Create Account'; });
 }
 
 // -- PASSWORD RESET ----------------------------------------
@@ -1595,7 +1595,7 @@ function doReset() {
   .catch(function(err){
     showToast(err.code==='auth/user-not-found'?'No account with this email.':err.message,'error');
   })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='📧 Send Reset Link'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='[EMAIL] Send Reset Link'; });
 }
 
 // -- PASSWORD TOGGLE ---------------------------------------
@@ -1611,9 +1611,9 @@ function checkStrength(pwd) {
   if (!pwd) { bar.className='strength-bar'; label.textContent=''; return; }
   var strong = pwd.length>=8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd);
   var medium = pwd.length>=6;
-  if (strong) { bar.className='strength-bar strong'; label.textContent='Strong ✅'; label.style.color='var(--success)'; }
-  else if (medium) { bar.className='strength-bar medium'; label.textContent='Medium ⚠️'; label.style.color='var(--warn)'; }
-  else { bar.className='strength-bar weak'; label.textContent='Weak ❌'; label.style.color='var(--error)'; }
+  if (strong) { bar.className='strength-bar strong'; label.textContent='Strong [OK]'; label.style.color='var(--success)'; }
+  else if (medium) { bar.className='strength-bar medium'; label.textContent='Medium [WARN]'; label.style.color='var(--warn)'; }
+  else { bar.className='strength-bar weak'; label.textContent='Weak [NO]'; label.style.color='var(--error)'; }
 }
 
 // -- LOGOUT ------------------------------------------------
@@ -1661,7 +1661,7 @@ function updateIssueSerials() {
   var raw = document.getElementById('issueSerialInput').value;
   var serials = raw.split(',').map(function(s){return s.trim().toUpperCase();}).filter(Boolean);
   document.getElementById('issueSerialTags').innerHTML = serials.map(function(s){
-    return '<div class="stag">'+s+'<button onclick="rmIS(\''+s+'\')">×</button></div>';
+    return '<div class="stag">'+s+'<button onclick="rmIS('+JSON.stringify(s)+')" >x</button></div>';
   }).join('');
   var b=document.getElementById('issueSerialCount');
   b.style.display=serials.length?'inline-flex':'none'; b.textContent=serials.length;
@@ -1740,16 +1740,16 @@ function createDeclaration() {
     loadDeclarations();
   })
   .catch(function(err){ showToast('Error: '+err.message,'error'); })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='📋 Create Declaration &amp; Generate Link'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='[FORM] Create Declaration &amp; Generate Link'; });
 }
 
 // -- EMAIL MODAL ------------------------------------------
 function openEmailModal(declId, empEmail, empName, serials, link) {
   activeEmailDeclId = declId;
-  document.getElementById('emailModalInfo').textContent = declId + ' — ' + serials.length + ' HDD(s) — ' + (empName||empEmail);
+  document.getElementById('emailModalInfo').textContent = declId + '  ' + serials.length + ' HDD(s)  ' + (empName||empEmail);
   document.getElementById('emailModalLink').textContent = link;
   document.getElementById('emailTo').value = empEmail;
-  document.getElementById('emailSubject').value = 'HDD Declaration ' + declId + ' — Please Acknowledge Receipt';
+  document.getElementById('emailSubject').value = 'HDD Declaration ' + declId + '  Please Acknowledge Receipt';
   document.getElementById('emailBody').value =
     'Dear ' + (empName || 'Employee') + ',\n\n' +
     'This is to inform you that ' + serials.length + ' HDD(s) have been issued to you.\n\n' +
@@ -1770,7 +1770,7 @@ function copyDeclLink() {
   navigator.clipboard.writeText(link).then(function(){
     showToast('Link copied to clipboard!','success');
   }).catch(function(){
-    showToast('Copy failed — please copy manually.','warn');
+    showToast('Copy failed  please copy manually.','warn');
   });
 }
 
@@ -1813,15 +1813,15 @@ function sendEmail() {
       emailParams
     )
     .then(function() {
-      showToast('✅ Email sent successfully via EmailJS!', 'success');
+      showToast('[OK] Email sent successfully via EmailJS!', 'success');
       updateDeclSentStatus(declId, to);
       sendBtn.disabled = false;
-      sendBtn.innerHTML = '📧 Open Email Client';
+      sendBtn.innerHTML = '[EMAIL] Open Email Client';
       closeEmailModal();
     })
     .catch(function(err) {
       console.warn('EmailJS failed:', err);
-      showToast('EmailJS failed — trying backup...', 'warn');
+      showToast('EmailJS failed  trying backup...', 'warn');
 
       // -- BACKUP: Google Apps Script ------------------
       if (APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL') {
@@ -1837,27 +1837,27 @@ function sendEmail() {
           mode: 'no-cors'
         })
         .then(function() {
-          showToast('✅ Email sent via Gmail backup!', 'success');
+          showToast('[OK] Email sent via Gmail backup!', 'success');
           updateDeclSentStatus(declId, to);
           closeEmailModal();
         })
         .catch(function() {
           // Final fallback: open mailto
-          showToast('Auto-send failed — opening email client...', 'warn');
+          showToast('Auto-send failed  opening email client...', 'warn');
           window.open('mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body), '_blank');
           updateDeclSentStatus(declId, to);
           closeEmailModal();
         })
         .finally(function() {
           sendBtn.disabled = false;
-          sendBtn.innerHTML = '📧 Open Email Client';
+          sendBtn.innerHTML = '[EMAIL] Open Email Client';
         });
       } else {
         // No Apps Script - mailto fallback
         window.open('mailto:' + to + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body), '_blank');
         updateDeclSentStatus(declId, to);
         sendBtn.disabled = false;
-        sendBtn.innerHTML = '📧 Open Email Client';
+        sendBtn.innerHTML = '[EMAIL] Open Email Client';
         closeEmailModal();
       }
     });
@@ -1912,26 +1912,26 @@ function renderDecls(decls) {
   var el=document.getElementById('declList');
   if(!decls.length){ el.innerHTML='<div class="empty">No declarations found.</div>'; return; }
   el.innerHTML=decls.map(function(d){
-    var date=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleDateString('en-IN'):'—';
-    var ackDate=d.acknowledgedAt&&d.acknowledgedAt.toDate?d.acknowledgedAt.toDate().toLocaleDateString('en-IN'):'—';
+    var date=d.createdAt&&d.createdAt.toDate?d.createdAt.toDate().toLocaleDateString('en-IN'):'';
+    var ackDate=d.acknowledgedAt&&d.acknowledgedAt.toDate?d.acknowledgedAt.toDate().toLocaleDateString('en-IN'):'';
     return '<div class="decl-card '+d.status+'">'+
       '<div class="decl-header">'+
         '<span class="decl-id">'+d.declId+'</span>'+
         sDeclBadge(d.status)+
       '</div>'+
-      '<div class="decl-serials">💾 '+(d.serialsStr||'—')+'</div>'+
+      '<div class="decl-serials">[HDD] '+(d.serialsStr||'')+'</div>'+
       '<div class="decl-meta">'+
-        '<span>👤 '+(d.employeeName||d.employeeEmail||'—')+'</span>'+
-        '<span>📧 '+(d.employeeEmail||'—')+'</span>'+
-        '<span>📦 Qty: '+(d.quantity||'—')+' | '+(d.size||'—')+'</span>'+
-        '<span>📅 Issued: '+date+'</span>'+
-        (d.acknowledgedAt?'<span style="color:var(--success);">✅ Ack: '+ackDate+'</span>':'')+
+        '<span>[USER] '+(d.employeeName||d.employeeEmail||'')+'</span>'+
+        '<span>[EMAIL] '+(d.employeeEmail||'')+'</span>'+
+        '<span> Qty: '+(d.quantity||'')+' | '+(d.size||'')+'</span>'+
+        '<span>[DATE] Issued: '+date+'</span>'+
+        (d.acknowledgedAt?'<span style="color:var(--success);">[OK] Ack: '+ackDate+'</span>':'')+
       '</div>'+
-      (d.adminNote?'<div style="font-size:.8rem;color:var(--muted);margin-bottom:5px;">📝 '+d.adminNote+'</div>':'')+
+      (d.adminNote?'<div style="font-size:.8rem;color:var(--muted);margin-bottom:5px;">[NOTE] '+d.adminNote+'</div>':'')+
       (d.employeeDetails?renderEmpDetails(d.employeeDetails):'<div style="font-size:.76rem;color:var(--muted);margin-top:4px;font-family:monospace;">Employee details not filled yet.</div>')+
       '<div class="action-row">'+
-        '<button class="btn btn-sm btn-copy" onclick="openEmailModal(\''+d.id+'\',\''+d.employeeEmail+'\',\''+d.employeeName+'\','+JSON.stringify(d.serials)+',\''+d.declLink+'\')">📧 Resend Link</button>'+
-        '<button class="btn-copy btn-sm" onclick="navigator.clipboard.writeText(\''+d.declLink+'\').then(function(){showToast(\'Link copied!\',\'success\')})">📋 Copy Link</button>'+
+        '<button class="btn btn-sm btn-copy" onclick="openEmailModal('+JSON.stringify(d.id)+','+JSON.stringify(d.employeeEmail||'')+','+JSON.stringify(d.employeeName||'')+','+JSON.stringify(d.serials||[])+','+JSON.stringify(d.declLink||'')+')" >Resend</button>'+
+        '<button class="btn-copy btn-sm" onclick="navigator.clipboard.writeText('+JSON.stringify(d.declLink||'')+').then(function(){showToast('+JSON.stringify('Link copied!')+','+JSON.stringify('success')+')})" >Copy</button>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -1939,19 +1939,19 @@ function renderDecls(decls) {
 
 function renderEmpDetails(det) {
   return '<div style="background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.15);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.8rem;">'+
-    '<div style="font-family:monospace;font-size:.68rem;color:var(--success);letter-spacing:1px;margin-bottom:6px;">✅ EMPLOYEE DETAILS</div>'+
+    '<div style="font-family:monospace;font-size:.68rem;color:var(--success);letter-spacing:1px;margin-bottom:6px;">[OK] EMPLOYEE DETAILS</div>'+
     '<div style="display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);">'+
-    (det.usedDate?'<span>📅 '+det.usedDate+'</span>':'')+
-    (det.department?'<span>🏢 '+det.department+'</span>':'')+
-    (det.deptLocation?'<span>📍 '+det.deptLocation+'</span>':'')+
-    (det.examinerName?'<span>👤 '+det.examinerName+'</span>':'')+
-    (det.purpose?'<span>🎯 '+det.purpose+'</span>':'')+
-    (det.note?'<span>📝 '+det.note+'</span>':'')+
+    (det.usedDate?'<span>[DATE] '+det.usedDate+'</span>':'')+
+    (det.department?'<span>[DEPT] '+det.department+'</span>':'')+
+    (det.deptLocation?'<span>[LOC] '+det.deptLocation+'</span>':'')+
+    (det.examinerName?'<span>[USER] '+det.examinerName+'</span>':'')+
+    (det.purpose?'<span>[AIM] '+det.purpose+'</span>':'')+
+    (det.note?'<span>[NOTE] '+det.note+'</span>':'')+
     '</div></div>';
 }
 
 function sDeclBadge(status) {
-  var map={pending:'<span class="sbadge s-pending">⏳ Pending</span>',sent:'<span class="sbadge s-sent">📧 Link Sent</span>',acknowledged:'<span class="sbadge s-acknowledged">✅ Acknowledged</span>',completed:'<span class="sbadge s-completed">✔️ Completed</span>'};
+  var map={pending:'<span class="sbadge s-pending">[WAIT] Pending</span>',sent:'<span class="sbadge s-sent">[EMAIL] Link Sent</span>',acknowledged:'<span class="sbadge s-acknowledged">[OK] Acknowledged</span>',completed:'<span class="sbadge s-completed">[DONE] Completed</span>'};
   return map[status]||'<span class="sbadge">'+status+'</span>';
 }
 
@@ -1966,11 +1966,11 @@ function loadMyDeclarations() {
     document.getElementById('pendingDeclList').innerHTML = decls.map(function(d){
       return '<div class="decl-card '+d.status+'">'+
         '<div class="decl-header"><span class="decl-id">'+d.declId+'</span>'+sDeclBadge(d.status)+'</div>'+
-        '<div class="decl-serials">💾 '+(d.serialsStr||'—')+'</div>'+
-        '<div class="decl-meta"><span>📦 Qty: '+(d.quantity||'—')+' | '+(d.size||'—')+'</span><span>👤 Issued by: '+(d.issuedBy||'—')+'</span></div>'+
-        (d.adminNote?'<div style="background:rgba(180,144,232,.06);border:1px solid rgba(180,144,232,.2);border-radius:7px;padding:9px 11px;font-size:.8rem;color:var(--admin);margin-top:6px;">💬 '+d.adminNote+'</div>':'')+
+        '<div class="decl-serials">[HDD] '+(d.serialsStr||'')+'</div>'+
+        '<div class="decl-meta"><span> Qty: '+(d.quantity||'')+' | '+(d.size||'')+'</span><span>[USER] Issued by: '+(d.issuedBy||'')+'</span></div>'+
+        (d.adminNote?'<div style="background:rgba(180,144,232,.06);border:1px solid rgba(180,144,232,.2);border-radius:7px;padding:9px 11px;font-size:.8rem;color:var(--admin);margin-top:6px;">[MSG] '+d.adminNote+'</div>':'')+
         '<div class="action-row">'+
-          '<button class="btn btn-success btn-sm" onclick="showAckForm(\''+d.id+'\')">✅ Acknowledge &amp; Fill Details</button>'+
+        '<button class="btn btn-success btn-sm" onclick="showAckForm('+JSON.stringify(d.id)+')" >Acknowledge Now</button>'+
         '</div>'+
       '</div>';
     }).join('');
@@ -1987,8 +1987,8 @@ function loadDoneDeclarations() {
     document.getElementById('doneDeclList').innerHTML = decls.map(function(d){
       return '<div class="decl-card acknowledged">'+
         '<div class="decl-header"><span class="decl-id">'+d.declId+'</span>'+sDeclBadge(d.status)+'</div>'+
-        '<div class="decl-serials">💾 '+(d.serialsStr||'—')+'</div>'+
-        '<div class="decl-meta"><span>📦 Qty: '+(d.quantity||'—')+'</span><span>✅ Acknowledged</span></div>'+
+        '<div class="decl-serials">[HDD] '+(d.serialsStr||'')+'</div>'+
+        '<div class="decl-meta"><span> Qty: '+(d.quantity||'')+'</span><span>[OK] Acknowledged</span></div>'+
         (d.employeeDetails?renderEmpDetails(d.employeeDetails):'')+
       '</div>';
     }).join('');
@@ -2032,19 +2032,19 @@ function renderAckForm(d) {
       '<div style="font-family:monospace;font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">DECLARATION</div>'+
       '<div style="font-size:1.1rem;font-weight:700;color:var(--accent);letter-spacing:2px;margin-bottom:8px;">'+d.declId+'</div>'+
       '<div style="display:flex;flex-wrap:wrap;gap:8px;font-size:.82rem;color:var(--muted);margin-bottom:10px;">'+
-        '<span>📦 Qty: '+(d.quantity||'—')+'</span>'+
-        '<span>💾 Size: '+(d.size||'—')+'</span>'+
-        '<span>📅 Transfer Date: '+(d.transferDate||'—')+'</span>'+
-        '<span>👤 Issued by: '+(d.issuedBy||'—')+'</span>'+
+        '<span> Qty: '+(d.quantity||'')+'</span>'+
+        '<span>[HDD] Size: '+(d.size||'')+'</span>'+
+        '<span>[DATE] Transfer Date: '+(d.transferDate||'')+'</span>'+
+        '<span>[USER] Issued by: '+(d.issuedBy||'')+'</span>'+
       '</div>'+
       '<div style="font-family:monospace;font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:6px;">SERIAL NUMBERS</div>'+
       '<div class="ack-serial-list">'+
         (d.serials||[]).map(function(s){ return '<div class="ack-serial">'+s+'</div>'; }).join('')+
       '</div>'+
-      (d.adminNote?'<div style="background:rgba(180,144,232,.06);border:1px solid rgba(180,144,232,.2);border-radius:7px;padding:9px 11px;font-size:.8rem;color:var(--admin);margin-top:8px;">💬 Admin note: '+d.adminNote+'</div>':'')+
+      (d.adminNote?'<div style="background:rgba(180,144,232,.06);border:1px solid rgba(180,144,232,.2);border-radius:7px;padding:9px 11px;font-size:.8rem;color:var(--admin);margin-top:8px;">[MSG] Admin note: '+d.adminNote+'</div>':'')+
     '</div>'+
     (alreadyAck
-      ? '<div style="text-align:center;padding:24px;font-family:monospace;font-size:.82rem;color:var(--success);">✅ You have already acknowledged this declaration.</div>'+(d.employeeDetails?renderEmpDetails(d.employeeDetails):'')
+      ? '<div style="text-align:center;padding:24px;font-family:monospace;font-size:.82rem;color:var(--success);">[OK] You have already acknowledged this declaration.</div>'+(d.employeeDetails?renderEmpDetails(d.employeeDetails):'')
       : '<div class="fc" id="ackForm">'+
           '<div style="font-size:.72rem;font-family:monospace;color:var(--muted);margin-bottom:14px;line-height:1.7;">By submitting this form, you confirm receipt of the above HDDs and agree to use them for official purposes only.</div>'+
           '<div class="fg"><label>Your Name</label><input type="text" id="ackName" placeholder="Your full name"></div>'+
@@ -2053,7 +2053,7 @@ function renderAckForm(d) {
           '<hr class="divider" data-label="Purpose">'+
           '<div class="fg"><label>Purpose <span class="opt">/ optional</span></label><div class="pills" id="ackPills"><div class="pill" onclick="selAckP(this,\'Action\')">Action</div><div class="pill" onclick="selAckP(this,\'Extraction\')">Extraction</div><div class="pill" onclick="selAckP(this,\'Cloning\')">Cloning</div><div class="pill" onclick="selAckP(this,\'Analysis\')">Analysis</div><div class="pill" onclick="selAckP(this,\'Other\')">Other</div></div><input type="hidden" id="ackPurpose"></div>'+
           '<div class="fg"><label>Note <span class="opt">/ optional</span></label><textarea id="ackNote" placeholder="Any remarks..."></textarea></div>'+
-          '<div class="fg"><button class="btn btn-success" id="ackBtn" onclick="submitAck()">✅ Acknowledge Receipt &amp; Submit</button></div>'+
+          '<div class="fg"><button class="btn btn-success" id="ackBtn" onclick="submitAck()">[OK] Acknowledge Receipt &amp; Submit</button></div>'+
         '</div>'
     );
 }
@@ -2127,7 +2127,7 @@ function submitAck() {
       '</div>';
   })
   .catch(function(err){ showToast('Error: '+err.message,'error'); })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='✅ Acknowledge Receipt &amp; Submit'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='[OK] Acknowledge Receipt &amp; Submit'; });
 }
 
 // -- ADMIN: UPDATE USED DATE ------------------------------
@@ -2146,7 +2146,7 @@ function adminUpdateDate() {
   batch.commit()
   .then(function(){ showToast('Updated '+serials.length+' record(s)!','success'); document.getElementById('aDateSerial').value=''; document.getElementById('aUpdateDate').value=''; document.getElementById('aDateTags').innerHTML=''; })
   .catch(function(err){ showToast('Error: '+err.message,'error'); })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='📅 Update Used Date'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='[DATE] Update Used Date'; });
 }
 
 // -- ADMIN: HDD RECORDS -----------------------------------
@@ -2183,17 +2183,17 @@ function filterHdds() {
 function renderHdds(records) {
   document.getElementById('hddCnt').textContent='Showing '+records.length+' of '+allHdds.length+' records';
   if(!records.length){ document.getElementById('hddTbody').innerHTML='<tr><td colspan="8"><div class="empty">No records.</div></td></tr>'; return; }
-  var td=function(v,extra){ return '<td style="padding:10px 12px;border-bottom:1px solid rgba(30,45,90,.5);vertical-align:middle;'+(extra||'')+'">'+(v||'—')+'</td>'; };
+  var td=function(v,extra){ return '<td style="padding:10px 12px;border-bottom:1px solid rgba(30,45,90,.5);vertical-align:middle;'+(extra||'')+'">'+(v||'')+'</td>'; };
   document.getElementById('hddTbody').innerHTML=records.map(function(r,i){
-    var szB=r.size==='1 TB'?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:.68rem;color:var(--accent);">1 TB</span>':r.size==='2 TB'?'<span style="background:rgba(123,94,167,.15);border:1px solid rgba(123,94,167,.3);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:.68rem;color:#b490e8;">2 TB</span>':r.size||'—';
-    var stB=r.status==='Used'?'<span class="sbadge s-used">● Used</span>':'<span class="sbadge s-unused">○ Not Used</span>';
+    var szB=r.size==='1 TB'?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:.68rem;color:var(--accent);">1 TB</span>':r.size==='2 TB'?'<span style="background:rgba(123,94,167,.15);border:1px solid rgba(123,94,167,.3);border-radius:5px;padding:2px 7px;font-family:monospace;font-size:.68rem;color:#b490e8;">2 TB</span>':r.size||'';
+    var stB=r.status==='Used'?'<span class="sbadge s-used">* Used</span>':'<span class="sbadge s-unused">o Not Used</span>';
     return '<tr>'+
       td(i+1,'color:var(--muted);font-family:monospace;font-size:.7rem;')+
-      td('<span style="font-family:monospace;font-size:.78rem;color:var(--accent);">'+(r.serialNumber||'—')+'</span>')+
+      td('<span style="font-family:monospace;font-size:.78rem;color:var(--accent);">'+(r.serialNumber||'')+'</span>')+
       td(szB)+td(stB)+
-      td('<span style="font-family:monospace;font-size:.76rem;">'+(r.usedDate||'—')+'</span>')+
+      td('<span style="font-family:monospace;font-size:.76rem;">'+(r.usedDate||'')+'</span>')+
       td(r.department)+td(r.examiner)+
-      td('<span style="font-family:monospace;font-size:.72rem;color:var(--muted);">'+(r.issuedTo||'—')+'</span>')+
+      td('<span style="font-family:monospace;font-size:.72rem;color:var(--muted);">'+(r.issuedTo||'')+'</span>')+
     '</tr>';
   }).join('');
 }
@@ -2275,12 +2275,12 @@ function loadMyNotifications() {
       var list = document.getElementById('notifList');
       if (!list) return;
       if (!count) { list.innerHTML='<div class="empty">No new notifications.</div>'; return; }
-      var icons  = { declaration_sent:'📋', transfer_received:'🔄', transfer_approved:'✅', transfer_rejected:'❌', ack:'✔️', overdue:'⚠️' };
+      var icons  = { declaration_sent:'[FORM]', transfer_received:'[SYNC]', transfer_approved:'[OK]', transfer_rejected:'[NO]', ack:'[DONE]', overdue:'[WARN]' };
       var titles = { declaration_sent:'New HDD Declaration', transfer_received:'HDD Transfer Request', transfer_approved:'Transfer Accepted', transfer_rejected:'Transfer Rejected', ack:'Declaration Acknowledged', overdue:'Overdue Reminder' };
       list.innerHTML = snap.docs.map(function(doc){
         var n     = doc.data();
         var time  = n.createdAt&&n.createdAt.toDate ? n.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '';
-        var icon  = icons[n.type]  || '🔔';
+        var icon  = icons[n.type]  || '[BELL]';
         var title = titles[n.type] || 'Notification';
         var msg   = (n.data && n.data.message) ? n.data.message : (n.body || '');
         var h = '';
@@ -2361,7 +2361,7 @@ function submitTransfer() {
     document.getElementById('tfrSerialTags').innerHTML='';
   })
   .catch(function(err){ showToast('Error: '+err.message,'error'); })
-  .finally(function(){ btn.disabled=false; btn.innerHTML='🔄 Initiate Transfer'; });
+  .finally(function(){ btn.disabled=false; btn.innerHTML='[SYNC] Initiate Transfer'; });
 }
 
 // Load incoming transfer requests for current user
@@ -2513,27 +2513,27 @@ function renderRouteMap(serial, hdd, events) {
   if (hdd) {
     stops.push({
       type     : 'issued',
-      person   : hdd.issuedTo || '—',
-      location : hdd.lastLocation || hdd.deptLocation || '—',
-      date     : '—',
-      label    : '📋 Initial Issue',
+      person   : hdd.issuedTo || '',
+      location : hdd.lastLocation || hdd.deptLocation || '',
+      date     : '',
+      label    : '[FORM] Initial Issue',
       color    : 'var(--accent)'
     });
   }
 
   // Transfer events
   events.forEach(function(e){
-    var date = e.timestamp&&e.timestamp.toDate?e.timestamp.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    var date = e.timestamp&&e.timestamp.toDate?e.timestamp.toDate().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
     if(e.eventType==='transfer_initiated'){
       stops.push({
         type     : 'transfer',
         person   : e.fromEmail,
         toEmail  : e.toEmail,
         toName   : e.toName||e.toEmail,
-        location : e.location||'—',
+        location : e.location||'',
         date     : date,
         reason   : e.reason||'',
-        label    : '🔄 Transfer Initiated',
+        label    : '[SYNC] Transfer Initiated',
         color    : 'var(--warn)'
       });
     } else if(e.eventType==='transfer_approved'){
@@ -2541,9 +2541,9 @@ function renderRouteMap(serial, hdd, events) {
         type     : 'approved',
         person   : e.toEmail,
         fromEmail: e.fromEmail,
-        location : e.location||'—',
+        location : e.location||'',
         date     : date,
-        label    : '✅ Transfer Accepted',
+        label    : '[OK] Transfer Accepted',
         color    : 'var(--success)'
       });
     }
@@ -2555,19 +2555,19 @@ function renderRouteMap(serial, hdd, events) {
     '<div class="panel" style="margin-bottom:16px;">'+
       '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'+
         '<div style="font-family:monospace;font-size:1.1rem;color:var(--accent);font-weight:700;">'+serial+'</div>'+
-        (hdd?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 8px;font-size:.72rem;font-family:monospace;color:var(--accent);">'+(hdd.size||'—')+'</span>':'') +
-        (hdd?(hdd.status==='Used'?'<span class="sbadge s-used">● Used</span>':'<span class="sbadge s-unused">○ Not Used</span>'):'') +
+        (hdd?'<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:2px 8px;font-size:.72rem;font-family:monospace;color:var(--accent);">'+(hdd.size||'')+'</span>':'') +
+        (hdd?(hdd.status==='Used'?'<span class="sbadge s-used">* Used</span>':'<span class="sbadge s-unused">o Not Used</span>'):'') +
       '</div>'+
       (hdd?'<div style="font-size:.8rem;color:var(--muted);margin-top:8px;display:flex;gap:16px;flex-wrap:wrap;">'+
-        '<span>👤 Current holder: <strong style="color:var(--text);">'+(hdd.issuedTo||'—')+'</strong></span>'+
-        '<span>📍 Location: '+(hdd.lastLocation||hdd.deptLocation||'—')+'</span>'+
-        '<span>🔬 Examiner: '+(hdd.examiner||'—')+'</span>'+
+        '<span>[USER] Current holder: <strong style="color:var(--text);">'+(hdd.issuedTo||'')+'</strong></span>'+
+        '<span>[LOC] Location: '+(hdd.lastLocation||hdd.deptLocation||'')+'</span>'+
+        '<span> Examiner: '+(hdd.examiner||'')+'</span>'+
       '</div>':'') +
     '</div>'+
 
     // Route Timeline
     '<div class="panel">'+
-      '<div style="font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:monospace;margin-bottom:20px;font-weight:700;">📍 TRAVEL ROUTE</div>'+
+      '<div style="font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:monospace;margin-bottom:20px;font-weight:700;">[LOC] TRAVEL ROUTE</div>'+
 
       (stops.length === 0
         ? '<div class="empty">No transfer history yet.</div>'
@@ -2587,15 +2587,15 @@ function renderRouteMap(serial, hdd, events) {
                     (stop.type==='transfer'
                       ? '<div style="font-size:.88rem;color:var(--text);margin-bottom:4px;">'+
                           '<strong>'+stop.person+'</strong>'+
-                          ' <span style="color:var(--warn);font-family:monospace;">→</span> '+
+                          ' <span style="color:var(--warn);font-family:monospace;"></span> '+
                           '<strong>'+(stop.toName||stop.toEmail)+'</strong>'+
                         '</div>'
-                      : '<div style="font-size:.88rem;color:var(--text);margin-bottom:4px;"><strong>'+(stop.person||'—')+'</strong></div>'
+                      : '<div style="font-size:.88rem;color:var(--text);margin-bottom:4px;"><strong>'+(stop.person||'')+'</strong></div>'
                     )+
                     '<div style="font-size:.76rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap;">'+
-                      '<span>📍 '+stop.location+'</span>'+
-                      (stop.date!=='—'?'<span>🕐 '+stop.date+'</span>':'')+
-                      (stop.reason?'<span>📝 '+stop.reason+'</span>':'')+
+                      '<span>[LOC] '+stop.location+'</span>'+
+                      (stop.date!==''?'<span>[TIME] '+stop.date+'</span>':'')+
+                      (stop.reason?'<span>[NOTE] '+stop.reason+'</span>':'')+
                     '</div>'+
                   '</div>'+
                 '</div>'+
@@ -2615,7 +2615,7 @@ function renderRouteMap(serial, hdd, events) {
                    return '<span style="background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:5px;padding:3px 9px;color:var(--accent);">'+
                      (s.person.includes('@')?s.person.split('@')[0]:s.person)+
                    '</span>';
-                 }).join(' <span style="color:var(--warn);">→</span> ')+
+                 }).join(' <span style="color:var(--warn);"></span> ')+
           '</div>'+
         '</div>'
       : ''
