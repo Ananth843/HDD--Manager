@@ -1,4 +1,4 @@
-<!-- HDD Manager v5.6 build:1779638476 -->
+<!-- HDD Manager v6.0 build:1779913255 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,9 +21,18 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -211,7 +220,33 @@ select option{background:var(--card);}
 .search-bar input{flex:1;min-width:140px;}
 .search-bar select{width:120px;}
 
-/* Install banner */
+/* Notification banner */
+#notifBanner{position:fixed;top:20px;right:20px;z-index:9998;background:var(--card);border:1px solid var(--accent);border-radius:14px;padding:14px 18px;max-width:320px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 4px 24px rgba(0,200,255,.3);opacity:0;transform:translateY(-20px);pointer-events:none;transition:all .4s cubic-bezier(.34,1.56,.64,1);}
+#notifBanner.show{opacity:1;transform:translateY(0);pointer-events:all;}
+.notif-banner-icon{font-size:1.4rem;flex-shrink:0;}
+.notif-banner-content .notif-title{font-weight:700;font-size:.9rem;color:var(--accent);margin-bottom:3px;}
+.notif-banner-content .notif-body{font-size:.78rem;color:var(--muted);line-height:1.5;}
+#notifBanner .close-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;width:auto;padding:0;margin-left:auto;flex-shrink:0;}
+
+/* Notification bell */
+.notif-bell{position:relative;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.2);border-radius:10px;padding:7px 10px;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.notif-bell:hover{background:rgba(0,200,255,.2);}
+#notifBadge{position:absolute;top:-6px;right:-6px;background:var(--error);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.65rem;font-weight:700;display:none;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;}
+
+/* Notification panel */
+#notifPanel{position:fixed;top:0;right:0;width:320px;height:100vh;background:var(--card);border-left:1px solid var(--border);z-index:500;transform:translateX(100%);transition:transform .3s ease;overflow-y:auto;}
+#notifPanel.open{transform:translateX(0);}
+.notif-panel-header{padding:20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.notif-panel-header h3{font-size:.9rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);}
+.notif-item{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;}
+.notif-item:hover{background:rgba(0,200,255,.05);}
+.notif-icon{font-size:1.4rem;flex-shrink:0;}
+.notif-content{flex:1;}
+.notif-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+.notif-body{font-size:.74rem;color:var(--muted);line-height:1.5;}
+.notif-time{font-size:.68rem;color:var(--muted);margin-top:4px;font-family:'Share Tech Mono',monospace;}
+
+/* Install banner *//* Install banner */
 #installBanner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;background:linear-gradient(135deg,#141c35,#0f1629);border-top:1px solid #1e2d5a;padding:12px 16px;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
 
 /* ── AUTH STYLES ── */
@@ -420,6 +455,21 @@ select option{background:var(--card);}
   </div>
 </div>
 
+<!-- Notification Permission Banner -->
+<div id="notifBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:500;background:linear-gradient(135deg,#141c35,#0f1629);border-bottom:1px solid #1e2d5a;padding:12px 20px;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:1.4rem;">🔔</span>
+    <div>
+      <div style="font-weight:700;font-size:.9rem;color:#e0e8ff;">Enable Push Notifications</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:.67rem;color:#5a6a99;">Get alerts for transfers, declarations and updates</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="requestNotifPermission()" style="padding:8px 16px;background:linear-gradient(135deg,#00c8ff,#0077ff);border:none;border-radius:8px;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.84rem;letter-spacing:1px;cursor:pointer;">Enable</button>
+    <button onclick="document.getElementById('notifBanner').style.display='none'" style="padding:8px 12px;background:transparent;border:1px solid #1e2d5a;border-radius:8px;color:#5a6a99;cursor:pointer;">Later</button>
+  </div>
+</div>
+
 <!-- ════════════ ADMIN ════════════ -->
 <div class="page hidden" id="adminPage" style="justify-content:flex-start;padding-top:24px;">
   <div class="app-container">
@@ -432,8 +482,24 @@ select option{background:var(--card);}
         <div class="dot admin"></div>
         <span style="background:rgba(180,144,232,.15);border:1px solid rgba(180,144,232,.4);color:var(--admin);padding:2px 8px;border-radius:5px;font-size:.66rem;font-weight:700;letter-spacing:1px;">ADMIN</span>
         <span id="adminEmail"></span>
+        <button class="notif-bell" onclick="toggleNotifPanel()" title="Notifications">
+          🔔<span id="notifBadge"></span>
+        </button>
         <button class="btn-ghost" onclick="doLogout()">Sign Out</button>
+        <div style="position:relative;cursor:pointer;" onclick="toggleNotifPanel()">
+          <span style="font-size:1.2rem;">🔔</span>
+          <span id="notifBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--error);color:#fff;font-size:.6rem;font-weight:700;border-radius:50%;width:16px;height:16px;align-items:center;justify-content:center;font-family:monospace;">0</span>
+        </div>
       </div>
+    </div>
+
+    <!-- Notification Panel -->
+    <div id="notifPanel" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-family:monospace;font-size:.76rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-weight:700;">Notifications</div>
+        <button class="btn-ghost btn-sm" onclick="toggleNotifPanel()">Close</button>
+      </div>
+      <div id="notifList"><div class="empty">Loading...</div></div>
     </div>
 
     <div class="nav-tabs">
@@ -775,7 +841,20 @@ select option{background:var(--card);}
           <div id="empEmailBadge" style="font-size:.68rem;color:var(--muted);"></div>
         </div>
         <button class="btn-ghost" onclick="doLogout()">Sign Out</button>
+        <div style="position:relative;cursor:pointer;" onclick="toggleNotifPanel()">
+          <span style="font-size:1.2rem;">🔔</span>
+          <span id="notifBadgeEmp" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--error);color:#fff;font-size:.6rem;font-weight:700;border-radius:50%;width:16px;height:16px;align-items:center;justify-content:center;font-family:monospace;">0</span>
+        </div>
       </div>
+    </div>
+
+    <!-- Notification Panel -->
+    <div id="notifPanelEmp" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="font-family:monospace;font-size:.76rem;color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-weight:700;">Notifications</div>
+        <button class="btn-ghost btn-sm" onclick="toggleNotifPanel()">Close</button>
+      </div>
+      <div id="notifList"><div class="empty">Loading...</div></div>
     </div>
 
     <!-- Stats -->
@@ -936,7 +1015,13 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 var db   = firebase.firestore();
-var auth = firebase.auth();
+var auth      = firebase.auth();
+var messaging = null;
+try { messaging = firebase.messaging(); } catch(e) { console.log('Messaging not supported:', e.message); }
+
+// ── NOTIFICATION CONFIG ────────────────────────────────────
+// Your VAPID key from Firebase Console -> Project Settings -> Cloud Messaging
+var VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
 
 // -- EMAILJS CONFIG ------------------------------------
 // Sign up free at emailjs.com -> get these 3 values
@@ -947,6 +1032,11 @@ var EMAILJS_PUBLIC_KEY  = 'j9zfKbh-Rtse7dGom';
 // -- APPS SCRIPT BACKUP URL ---------------------------
 // Paste your Apps Script Web App URL here as backup
 var APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
+
+// -- FCM VAPID KEY -------------------------------------------
+// Get this from Firebase Console -> Project Settings -> Cloud Messaging
+// -> Web Push certificates -> Generate key pair -> copy the Key pair
+var FCM_VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
 
 // Init EmailJS
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -996,6 +1086,8 @@ auth.onAuthStateChanged(function(user) {
       if (!document.getElementById('adminPage').classList.contains('hidden')) return;
       transitionTo('loginPage','adminPage');
       setTimeout(loadDeclarations, 300);
+    setTimeout(startNotificationListener, 500);
+    setTimeout(updateNotifBadge, 600);
     } else {
       loadUserProfile(user);
     }
@@ -1064,6 +1156,7 @@ function doLogin() {
       timestamp:firebase.firestore.FieldValue.serverTimestamp()
     }).catch(function(){});
     showToast('Welcome back!','success');
+    setTimeout(initNotifications, 1000);
   })
   .catch(function(err) {
     var msg = err.code==='auth/wrong-password' ? 'Incorrect password.'
@@ -1126,8 +1219,12 @@ function loadUserProfile(user) {
     document.getElementById('profileLocation').value     = profile.location || '';
 
     transitionTo('loginPage','empDashPage');
+    setTimeout(loadMyNotifications, 1500);
     loadEmpHdds();
+    setTimeout(startNotificationListener, 500);
+    setTimeout(updateNotifBadge, 600);
     showToast('Welcome, '+(profile.name||currentUser.split('@')[0])+'!','success');
+    requestNotificationPermission();
   });
 }
 
@@ -1244,6 +1341,12 @@ function empSubmitTransfer() {
   batch.commit()
   .then(function(){
     showToast('Transfer request sent to '+toEmail+'!','success');
+    sendEmailNotification(toEmail, toName, 'HDD Transfer Request - Approval Needed',
+      currentUser + ' wants to transfer ' + serials.join(', ') + ' to you. Please open the app to approve or reject.');
+    sendPushNotification(toEmail, 'HDD Transfer Request', currentUser+' wants to transfer HDDs to you. Tap to review.', 'transfer', 'https://ananth843.github.io/HDD--Manager/');
+    sendNotification(toEmail, 'transfer_received',
+      currentUser+' wants to transfer '+serials.length+' HDD(s) to you. Transfer ID: '+transferId);
+    notifyTransferReceived(toEmail, toName, currentUser, transferId, serials.join(', '));
     ['empTfrSerial','empTfrToEmail','empTfrToName','empTfrLocation','empTfrReason'].forEach(function(id){document.getElementById(id).value='';});
     document.getElementById('empTfrTags').innerHTML='';
   })
@@ -1290,7 +1393,9 @@ function empApproveTransfer(transferId,fromEmail,serialsStr,location){
 
 function empRejectTransfer(transferId){
   db.collection('transfers').doc(transferId).update({status:'rejected',rejectedAt:firebase.firestore.FieldValue.serverTimestamp(),rejectedBy:currentUser})
-  .then(function(){showToast('Transfer rejected.','info');loadEmpIncoming();});
+  .then(function(){showToast('Transfer rejected.','info');
+    sendNotification(fromEmail, 'transfer_rejected',
+      currentUser+' rejected your HDD transfer request.');loadEmpIncoming();});
 }
 
 // -- EMPLOYEE DECLARATIONS ---------------------------------
@@ -1377,6 +1482,8 @@ auth.onAuthStateChanged(function(user) {
       if (!document.getElementById('loginPage').classList.contains('hidden'))
         transitionTo('loginPage','adminPage');
       setTimeout(loadDeclarations, 300);
+    setTimeout(startNotificationListener, 500);
+    setTimeout(updateNotifBadge, 600);
     } else {
       // Load employee profile
       db.collection('users').doc(user.uid).get().then(function(doc){
@@ -1414,6 +1521,7 @@ function doLogin() {
   auth.signInWithEmailAndPassword(email, pwd)
   .then(function(cred){
     showToast('Welcome back!','success');
+    setTimeout(initNotifications, 1000);
   })
   .catch(function(err){
     var msg = err.code==='auth/wrong-password'?'Wrong password.':
@@ -1614,6 +1722,18 @@ function createDeclaration() {
   })
   .then(function() {
     showToast('Declaration '+declId+' created!','success');
+    // Notify employee via email
+    sendEmailNotification(empEmail, empName,
+      'HDD Declaration ' + declId + ' - Action Required',
+      'You have been issued ' + serials.length + ' HDD(s). Serial: ' + serials.join(', ') + '. Please acknowledge via the link in your email.'
+    );
+    // Push notification
+    sendPushNotification(empEmail, 'HDD Issued to You', serials.length + ' HDD(s) assigned. Please acknowledge.', 'declaration', declLink);
+    // Notify employee
+    sendNotification(empEmail, 'declaration_sent',
+      'Admin has issued '+serials.length+' HDD(s) to you. Declaration ID: '+declId+'. Please acknowledge.');
+    // Notify employee
+    notifyDeclarationSent(empEmail, empName, declId, serials, declLink, currentUser);
     // Open email modal
     openEmailModal(declId, empEmail, empName, serials, declLink);
     resetIssueForm();
@@ -1991,6 +2111,12 @@ function submitAck() {
   })
   .then(function(){
     showToast('Acknowledged successfully!','success');
+    // Notify all admins
+    ADMINS.forEach(function(adminEmail){
+      sendEmailNotification(adminEmail, 'Admin', 'HDD Declaration Acknowledged',
+        currentUser + ' has acknowledged declaration ' + activeDeclId + ' and filled in the details.');
+      sendPushNotification(adminEmail, 'Declaration Acknowledged', currentUser+' acknowledged an HDD declaration.', 'ack', 'https://ananth843.github.io/HDD--Manager/');
+    });
     document.getElementById('ackContent').innerHTML =
       '<div style="text-align:center;padding:40px 20px;">'+
         '<div style="width:80px;height:80px;border-radius:50%;border:3px solid var(--success);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 0 30px rgba(0,229,160,.4);">'+
@@ -2085,6 +2211,87 @@ function updateTfrTags() {
   }).join('');
 }
 
+
+// ================================================================
+// NOTIFICATION SYSTEM
+// ================================================================
+function initNotifications() {
+  if (!messaging) return;
+  if (!('Notification' in window)) return;
+  Notification.requestPermission().then(function(permission) {
+    if (permission !== 'granted') return;
+    messaging.getToken({ vapidKey: VAPID_KEY })
+    .then(function(token) {
+      if (token && currentUser) {
+        db.collection('fcm_tokens').doc(currentUser).set({
+          token:token, email:currentUser,
+          updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+          platform:navigator.userAgent.includes('Mobile')?'mobile':'desktop'
+        },{merge:true});
+      }
+    }).catch(function(err){ console.log('FCM error:',err.message); });
+  });
+  messaging.onMessage(function(payload) {
+    var title=(payload.notification&&payload.notification.title)||'HDD Manager';
+    var body=(payload.notification&&payload.notification.body)||'';
+    showInAppNotification(title, body);
+  });
+}
+
+function showInAppNotification(title, body) {
+  var banner = document.getElementById('notifBanner');
+  if (!banner) return;
+  document.getElementById('notifTitle').textContent = title;
+  document.getElementById('notifBody').textContent  = body;
+  banner.classList.add('show');
+  setTimeout(function(){ banner.classList.remove('show'); }, 6000);
+}
+
+function sendNotification(toEmail, type, message) {
+  db.collection('notifications').add({
+    toEmail:toEmail, type:type,
+    data:{ message:message },
+    read:false, status:'pending',
+    createdAt:firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy:currentUser
+  }).catch(function(err){ console.log('Notif error:',err.message); });
+}
+
+function markNotifRead(notifId) {
+  db.collection('notifications').doc(notifId).update({ read:true });
+}
+
+function loadMyNotifications() {
+  if (!currentUser) return;
+  db.collection('notifications')
+    .where('toEmail','==',currentUser)
+    .where('read','==',false)
+    .orderBy('createdAt','desc')
+    .limit(20)
+    .onSnapshot(function(snap) {
+      var count = snap.size;
+      var badge = document.getElementById('notifBadge');
+      if (badge) { badge.textContent=count>0?count:''; badge.style.display=count>0?'flex':'none'; }
+      var list = document.getElementById('notifList');
+      if (!list) return;
+      if (!count) { list.innerHTML='<div class="empty">No new notifications.</div>'; return; }
+      var icons={'declaration_sent':'📋','transfer_received':'🔄','transfer_approved':'✅','transfer_rejected':'❌','declaration_overdue':'⚠️','status_updated':'📝'};
+      var titles={'declaration_sent':'New HDD Declaration','transfer_received':'HDD Transfer Request','transfer_approved':'Transfer Approved','transfer_rejected':'Transfer Rejected','declaration_overdue':'Acknowledgement Overdue','status_updated':'Status Updated'};
+      list.innerHTML = snap.docs.map(function(doc){
+        var n=doc.data();
+        var time=n.createdAt&&n.createdAt.toDate?n.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'';
+        var h='<div class="notif-item" onclick="markNotifRead(''+doc.id+'')">';
+        h+='<div class="notif-icon">'+(icons[n.type]||'🔔')+'</div>';
+        h+='<div class="notif-content">';
+        h+='<div class="notif-title">'+(titles[n.type]||'Notification')+'</div>';
+        h+='<div class="notif-body">'+(n.data&&n.data.message?n.data.message:'')+'</div>';
+        h+='<div class="notif-time">'+time+'</div>';
+        h+='</div></div>';
+        return h;
+      }).join('');
+    }, function(err){ console.log('Notif listener error:',err.message); });
+}
+
 // Submit a transfer request
 function submitTransfer() {
   var serialRaw = document.getElementById('tfrSerialInput').value.trim();
@@ -2138,6 +2345,11 @@ function submitTransfer() {
   })
   .then(function(){
     showToast('Transfer request sent to '+toEmail+'!','success');
+    sendEmailNotification(toEmail, toName, 'HDD Transfer Request - Approval Needed',
+      currentUser + ' wants to transfer ' + serials.join(', ') + ' to you. Please open the app to approve or reject.');
+    sendPushNotification(toEmail, 'HDD Transfer Request', currentUser+' wants to transfer HDDs to you. Tap to review.', 'transfer', 'https://ananth843.github.io/HDD--Manager/');
+    // Notify recipient
+    notifyTransferReceived(toEmail, toName, currentUser, transferId, serials.join(', '));
     // Reset form
     document.getElementById('tfrSerialInput').value='';
     document.getElementById('tfrToEmail').value='';
@@ -2229,6 +2441,16 @@ function approveTransfer(transferId, fromEmail, serialsStr, location) {
   batch.commit()
   .then(function(){
     showToast('Transfer accepted! HDDs are now assigned to you.','success');
+    db.collection('transfers').doc(transferId).get().then(function(doc){
+      if(doc.exists){
+        var fromEmail = doc.data().fromEmail || '';
+        sendEmailNotification(fromEmail, '', 'HDD Transfer Accepted',
+          currentUser + ' has accepted your HDD transfer. The HDDs are now assigned to them.');
+        sendPushNotification(fromEmail, 'Transfer Accepted', currentUser+' accepted your HDD transfer.', 'transfer-ok', 'https://ananth843.github.io/HDD--Manager/');
+      }
+    });
+    sendNotification(fromEmail, 'transfer_approved',
+      currentUser+' accepted your HDD transfer request.');
     loadIncomingTransfers();
   })
   .catch(function(err){ showToast('Error: '+err.message,'error'); });
@@ -2400,6 +2622,235 @@ function renderRouteMap(serial, hdd, events) {
   el.innerHTML = html;
 }
 
+
+// ==============================================================
+// NOTIFICATION SYSTEM
+// ==============================================================
+
+// -- REQUEST PERMISSION + GET FCM TOKEN -----------------------
+function initNotifications() {
+  if (!messaging) { console.log('FCM not available'); return; }
+  if (!('Notification' in window)) { console.log('Notifications not supported'); return; }
+
+  Notification.requestPermission().then(function(permission) {
+    if (permission === 'granted') {
+      getFCMToken();
+    } else {
+      console.log('Notification permission denied');
+    }
+  });
+}
+
+function getFCMToken() {
+  if (!messaging || !FCM_VAPID_KEY || FCM_VAPID_KEY === 'YOUR_VAPID_KEY_HERE') return;
+  messaging.getToken({ vapidKey: FCM_VAPID_KEY })
+  .then(function(token) {
+    if (token && currentUser) {
+      // Save token to Firestore against the user
+      db.collection('fcm_tokens').doc(currentUser).set({
+        token     : token,
+        email     : currentUser,
+        updatedAt : firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      console.log('FCM token saved for:', currentUser);
+    }
+  })
+  .catch(function(err) { console.log('FCM token error:', err.message); });
+}
+
+// -- SHOW IN-APP NOTIFICATION TOAST ---------------------------
+function showNotifToast(title, body, type, actionUrl) {
+  // In-app notification bell badge
+  updateNotifBadge();
+
+  // Save to Firestore for history
+  if (currentUser) {
+    db.collection('notifications').add({
+      to        : currentUser,
+      title     : title,
+      body      : body,
+      type      : type || 'info',
+      read      : false,
+      url       : actionUrl || '',
+      createdAt : firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }
+
+  showToast(title + ': ' + body, type || 'info');
+}
+
+// -- SEND PUSH NOTIFICATION via FCM (via Apps Script) ---------
+function sendPushNotification(toEmail, title, body, tag, url) {
+  // Call Apps Script which uses Firebase Admin SDK to send FCM
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') return;
+
+  fetch(APPS_SCRIPT_URL, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'application/json' },
+    body    : JSON.stringify({
+      action : 'sendPush',
+      toEmail: toEmail,
+      title  : title,
+      body   : body,
+      tag    : tag  || 'hdd',
+      url    : url  || 'https://ananth843.github.io/HDD--Manager/'
+    }),
+    mode: 'no-cors'
+  }).catch(function(e) { console.log('Push send error:', e); });
+}
+
+// -- SEND EMAIL NOTIFICATION ----------------------------------
+function sendEmailNotification(toEmail, toName, subject, messageBody) {
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email  : toEmail,
+    to_name   : toName || toEmail.split('@')[0],
+    subject   : subject,
+    decl_id   : '',
+    quantity  : '',
+    size      : '',
+    serials   : '',
+    transfer_date: '',
+    admin_note: messageBody,
+    issued_by : currentUser,
+    decl_link : 'https://ananth843.github.io/HDD--Manager/',
+    issue_date: new Date().toLocaleDateString('en-IN')
+  }).catch(function(e) { console.log('Email notif error:', e); });
+}
+
+// -- NOTIFICATION BELL UI -------------------------------------
+function updateNotifBadge() {
+  if (!currentUser) return;
+  db.collection('notifications')
+    .where('to', '==', currentUser)
+    .where('read', '==', false)
+    .get()
+  .then(function(snap) {
+    var count = snap.size;
+    var badge = document.getElementById('notifBadge');
+    if (badge) {
+      badge.textContent  = count > 9 ? '9+' : count;
+      badge.style.display= count > 0 ? 'flex' : 'none';
+    }
+  });
+}
+
+// -- LOAD NOTIFICATION HISTORY --------------------------------
+function loadNotifications() {
+  if (!currentUser) return;
+  var el = document.getElementById('notifList');
+  if (!el) return;
+  el.innerHTML = '<div class="empty">Loading...</div>';
+
+  db.collection('notifications')
+    .where('to', '==', currentUser)
+    .orderBy('createdAt', 'desc')
+    .limit(20)
+    .get()
+  .then(function(snap) {
+    if (snap.empty) { el.innerHTML = '<div class="empty">No notifications yet.</div>'; return; }
+    var html = '';
+    snap.forEach(function(doc) {
+      var n    = doc.data();
+      var date = n.createdAt && n.createdAt.toDate
+                 ? n.createdAt.toDate().toLocaleString('en-IN') : '--';
+      var bg   = n.read ? 'var(--surface)' : 'rgba(0,200,255,0.05)';
+      var border = n.read ? 'var(--border)' : 'rgba(0,200,255,0.3)';
+      html += '<div style="background:'+bg+';border:1px solid '+border+';border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;" onclick="markNotifRead(''+doc.id+'')">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">';
+      html += '<span style="font-weight:700;font-size:.88rem;color:var(--accent);">'+n.title+'</span>';
+      html += '<span style="font-family:monospace;font-size:.68rem;color:var(--muted);">'+date+'</span>';
+      html += '</div>';
+      html += '<div style="font-size:.82rem;color:var(--muted);">'+n.body+'</div>';
+      if (!n.read) html += '<div style="width:6px;height:6px;background:var(--accent);border-radius:50%;margin-top:6px;"></div>';
+      html += '</div>';
+    });
+    el.innerHTML = html;
+
+    // Mark all as read
+    snap.forEach(function(doc) {
+      if (!doc.data().read) doc.ref.update({ read: true });
+    });
+    var badge = document.getElementById('notifBadge');
+    if (badge) badge.style.display = 'none';
+  });
+}
+
+function markNotifRead(docId) {
+  db.collection('notifications').doc(docId).update({ read: true });
+  updateNotifBadge();
+}
+
+// -- LISTEN FOR REAL-TIME NOTIFICATIONS -----------------------
+function startNotifListener() {
+  if (!currentUser) return;
+  db.collection('notifications')
+    .where('to', '==', currentUser)
+    .where('read', '==', false)
+    .onSnapshot(function(snap) {
+      snap.docChanges().forEach(function(change) {
+        if (change.type === 'added') {
+          var n = change.doc.data();
+          // Show toast for new notification
+          showToast(n.title + ': ' + n.body, n.type || 'info');
+          updateNotifBadge();
+          // Browser push (if app is open)
+          if (Notification.permission === 'granted') {
+            new Notification(n.title, {
+              body : n.body,
+              icon : './icons/icon-192.png',
+              badge: './icons/icon-72.png',
+              tag  : n.type || 'hdd'
+            });
+          }
+        }
+      });
+    });
+}
+
+
+// -- NOTIFICATION PANEL TOGGLE --------------------------------
+function toggleNotifPanel() {
+  var p1 = document.getElementById('notifPanel');
+  var p2 = document.getElementById('notifPanelEmp');
+  var panel = p1 || p2;
+  // Find whichever panel is in the visible page
+  if (p1 && !document.getElementById('adminPage').classList.contains('hidden')) panel = p1;
+  else if (p2) panel = p2;
+  if (!panel) return;
+  var showing = panel.style.display !== 'none';
+  panel.style.display = showing ? 'none' : 'block';
+  if (!showing) loadNotifications();
+}
+
+// -- OVERDUE DECLARATION CHECKER (runs on admin login) --------
+function checkOverdueDeclarations() {
+  var cutoff = new Date();
+  cutoff.setHours(cutoff.getHours() - 24);
+
+  db.collection('declarations')
+    .where('status', 'in', ['pending', 'sent'])
+    .get()
+  .then(function(snap) {
+    snap.forEach(function(doc) {
+      var d = doc.data();
+      var created = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null;
+      if (created && created < cutoff) {
+        // Show in-app alert
+        showNotifToast(
+          'Overdue Declaration',
+          d.declId + ' not acknowledged by ' + d.employeeEmail + ' (issued ' + created.toLocaleDateString('en-IN') + ')',
+          'warn'
+        );
+        // Email reminder to employee
+        sendEmailNotification(d.employeeEmail, d.employeeName,
+          'Reminder: Please Acknowledge HDD Declaration ' + d.declId,
+          'This is a reminder to acknowledge your HDD declaration. Click here: ' + d.declLink
+        );
+      }
+    });
+  });
+}
+
 // -- RESET FORMS ------------------------------------------
 function resetIssueForm() {
   ['issueEmail','issueName','issueSerialInput','issueSize','issueDate','issueAdminNote'].forEach(function(id){ document.getElementById(id).value=''; });
@@ -2413,6 +2864,158 @@ function showToast(msg,type){
   var t=document.getElementById('toast');
   t.textContent=msg; t.className='toast '+type+' show';
   setTimeout(function(){t.className='toast';},4000);
+}
+
+
+// ==============================================================
+// PUSH NOTIFICATION SYSTEM
+// ==============================================================
+
+function requestNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') { subscribeUserToPush(); return; }
+  if (Notification.permission !== 'denied') {
+    Notification.requestPermission().then(function(p) {
+      if (p === 'granted') { subscribeUserToPush(); showToast('Notifications enabled!','success'); }
+    });
+  }
+}
+
+function subscribeUserToPush() {
+  if (!currentUser) return;
+  db.collection('users').doc(currentUser).set({
+    notificationsEnabled:true,
+    notificationUpdatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  },{merge:true}).catch(function(){});
+}
+
+function showPushNotification(title, body, tag) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  var opts = { body:body, icon:'./icons/icon-192.png', badge:'./icons/icon-72.png', tag:tag||'hdd', vibrate:[200,100,200] };
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(function(reg){ reg.showNotification(title, opts); });
+  } else { new Notification(title, opts); }
+}
+
+function logNotification(toEmail, type, title, message, data) {
+  db.collection('notifications').add({
+    toEmail:toEmail, type:type, title:title, message:message,
+    data:data||{}, read:false, createdAt:firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function(){});
+}
+
+function sendEmailNotification(toEmail, toName, subject, note) {
+  if (typeof emailjs === 'undefined') return;
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    to_email:toEmail, to_name:toName||toEmail.split('@')[0],
+    subject:subject, admin_note:note,
+    decl_id:'', quantity:'', size:'', serials:'',
+    decl_link:window.location.origin + window.location.pathname,
+    issue_date:new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'})
+  }).catch(function(e){ console.warn('Email notif failed:',e); });
+}
+
+var notifUnsubscribe = null;
+function startNotificationListener() {
+  if (!currentUser) return;
+  if (notifUnsubscribe) notifUnsubscribe();
+  notifUnsubscribe = db.collection('notifications')
+    .where('toEmail','==',currentUser)
+    .where('read','==',false)
+    .orderBy('createdAt','desc')
+    .limit(10)
+    .onSnapshot(function(snap) {
+      snap.docChanges().forEach(function(change) {
+        if (change.type === 'added') {
+          var n = change.doc.data();
+          showPushNotification(n.title, n.message, n.type);
+          updateNotifBadge();
+        }
+      });
+    }, function(){});
+}
+
+function updateNotifBadge() {
+  if (!currentUser) return;
+  db.collection('notifications').where('toEmail','==',currentUser).where('read','==',false).get()
+  .then(function(snap) {
+    var b = document.getElementById('notifBadge');
+    if (b) { b.textContent=snap.size>0?snap.size:''; b.style.display=snap.size>0?'flex':'none'; }
+  });
+}
+
+function toggleNotifPanel() {
+  var p = document.getElementById('notifPanel');
+  if (!p) return;
+  var vis = p.style.display === 'block';
+  p.style.display = vis ? 'none' : 'block';
+  if (!vis) loadNotifPanel();
+}
+
+function loadNotifPanel() {
+  var panel = document.getElementById('notifPanel');
+  if (!panel) return;
+  panel.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);font-family:monospace;font-size:.75rem;">Loading...</div>';
+  db.collection('notifications').where('toEmail','==',currentUser).orderBy('createdAt','desc').limit(20).get()
+  .then(function(snap) {
+    if (snap.empty) { panel.innerHTML='<div style="padding:16px;text-align:center;color:var(--muted);font-size:.78rem;">No notifications yet.</div>'; return; }
+    var batch = db.batch();
+    var html = '';
+    snap.forEach(function(doc) {
+      var n = doc.data();
+      var date = n.createdAt&&n.createdAt.toDate?n.createdAt.toDate().toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'--';
+      var color = n.type==='transfer_received'?'var(--warn)':n.type==='transfer_approved'?'var(--success)':n.type==='transfer_rejected'?'var(--error)':'var(--accent)';
+      html += '<div style="padding:12px 16px;border-bottom:1px solid var(--border);background:' + (n.read?'transparent':'rgba(0,200,255,0.05)') + ';">';
+      html += '<div style="display:flex;justify-content:space-between;gap:8px;">';
+      html += '<div><div style="font-weight:700;font-size:.84rem;color:'+color+';">' + n.title + '</div>';
+      html += '<div style="font-size:.76rem;color:var(--muted);margin-top:3px;line-height:1.5;">' + n.message + '</div></div>';
+      html += '<div style="font-family:monospace;font-size:.64rem;color:var(--muted);white-space:nowrap;">' + date + '</div>';
+      html += '</div></div>';
+      if (!n.read) batch.update(doc.ref, {read:true});
+    });
+    panel.innerHTML = html;
+    batch.commit().then(function(){ updateNotifBadge(); });
+  });
+}
+
+document.addEventListener('click', function(e) {
+  var panel = document.getElementById('notifPanel');
+  var btn   = document.getElementById('notifBtn');
+  if (panel && btn && !panel.contains(e.target) && !btn.contains(e.target)) panel.style.display='none';
+});
+
+// Event notification triggers
+function notifyDeclarationSent(empEmail, empName, declId, serials, declLink, issuedBy) {
+  var title = 'HDD Declaration Issued';
+  var msg   = serials.length + ' HDD(s) issued to you. Please acknowledge receipt.';
+  logNotification(empEmail,'declaration_sent',title,msg,{declId:declId,link:declLink});
+  sendEmailNotification(empEmail, empName, 'HDD Declaration '+declId+' - Action Required',
+    'Please acknowledge receipt of '+serials.length+' HDD(s) assigned to you. Link: '+declLink);
+}
+
+function notifyTransferReceived(toEmail, toName, fromEmail, transferId, serialsStr) {
+  var title = 'New HDD Transfer Request';
+  var msg   = fromEmail + ' wants to transfer HDDs to you: ' + serialsStr;
+  logNotification(toEmail,'transfer_received',title,msg,{transferId:transferId,from:fromEmail});
+  sendEmailNotification(toEmail, toName, 'HDD Transfer Request - Action Required',
+    fromEmail+' has initiated an HDD transfer to you. Serials: '+serialsStr+'. Login to approve or reject.');
+}
+
+function notifyTransferResult(fromEmail, toEmail, transferId, approved, serialsStr) {
+  var type  = approved?'transfer_approved':'transfer_rejected';
+  var title = approved?'Transfer Approved':'Transfer Rejected';
+  var msg   = approved
+    ? 'Your transfer of '+serialsStr+' to '+toEmail+' was APPROVED.'
+    : 'Your transfer of '+serialsStr+' to '+toEmail+' was REJECTED.';
+  logNotification(fromEmail,type,title,msg,{transferId:transferId,to:toEmail});
+  sendEmailNotification(fromEmail,'',title,msg);
+}
+
+function notifyStatusUpdated(empEmail, declId, status, adminNote) {
+  var title = 'Declaration Status Updated';
+  var msg   = 'Your declaration '+declId+' is now: '+status+(adminNote?'. Admin: '+adminNote:'');
+  logNotification(empEmail,'status_updated',title,msg,{declId:declId,status:status});
+  sendEmailNotification(empEmail,'',title,msg);
 }
 
 // -- PWA --------------------------------------------------
