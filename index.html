@@ -1,4 +1,4 @@
-<!-- HDD Manager v6.0 build:1779913255 -->
+<!-- HDD Manager v6.1 build:1780296471 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1036,7 +1036,7 @@ var APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
 // -- FCM VAPID KEY -------------------------------------------
 // Get this from Firebase Console -> Project Settings -> Cloud Messaging
 // -> Web Push certificates -> Generate key pair -> copy the Key pair
-var FCM_VAPID_KEY = 'BIo5sWAqdm6uZY74BgoYaI8N8otJX34IUf7t2PqR396T_YIzhImaVbfiu78AEt68CfiPG4Xwkbp2_EALCd6NrpU';
+var FCM_VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
 
 // Init EmailJS
 emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
@@ -2275,24 +2275,26 @@ function loadMyNotifications() {
       var list = document.getElementById('notifList');
       if (!list) return;
       if (!count) { list.innerHTML='<div class="empty">No new notifications.</div>'; return; }
-      var icons={'declaration_sent':'📋','transfer_received':'🔄','transfer_approved':'✅','transfer_rejected':'❌','declaration_overdue':'⚠️','status_updated':'📝'};
-      var titles={'declaration_sent':'New HDD Declaration','transfer_received':'HDD Transfer Request','transfer_approved':'Transfer Approved','transfer_rejected':'Transfer Rejected','declaration_overdue':'Acknowledgement Overdue','status_updated':'Status Updated'};
+      var icons  = { declaration_sent:'📋', transfer_received:'🔄', transfer_approved:'✅', transfer_rejected:'❌', ack:'✔️', overdue:'⚠️' };
+      var titles = { declaration_sent:'New HDD Declaration', transfer_received:'HDD Transfer Request', transfer_approved:'Transfer Accepted', transfer_rejected:'Transfer Rejected', ack:'Declaration Acknowledged', overdue:'Overdue Reminder' };
       list.innerHTML = snap.docs.map(function(doc){
-        var n=doc.data();
-        var time=n.createdAt&&n.createdAt.toDate?n.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'';
-        var h='<div class="notif-item" onclick="markNotifRead(''+doc.id+'')">';
-        h+='<div class="notif-icon">'+(icons[n.type]||'🔔')+'</div>';
-        h+='<div class="notif-content">';
-        h+='<div class="notif-title">'+(titles[n.type]||'Notification')+'</div>';
-        h+='<div class="notif-body">'+(n.data&&n.data.message?n.data.message:'')+'</div>';
-        h+='<div class="notif-time">'+time+'</div>';
-        h+='</div></div>';
+        var n     = doc.data();
+        var time  = n.createdAt&&n.createdAt.toDate ? n.createdAt.toDate().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}) : '';
+        var icon  = icons[n.type]  || '🔔';
+        var title = titles[n.type] || 'Notification';
+        var msg   = (n.data && n.data.message) ? n.data.message : (n.body || '');
+        var h = '';
+        h += '<div class="notif-item" onclick="markNotifRead(' + JSON.stringify(doc.id) + ')">';
+        h += '<span style="font-size:1.2rem;">' + icon + '</span>';
+        h += '<div style="flex:1;">';
+        h += '<div style="font-weight:700;font-size:.85rem;color:var(--text);">'  + title + '</div>';
+        h += '<div style="font-size:.78rem;color:var(--muted);margin-top:2px;">' + msg   + '</div>';
+        h += '<div style="font-size:.68rem;color:var(--muted);margin-top:4px;font-family:monospace;">' + time + '</div>';
+        h += '</div></div>';
         return h;
       }).join('');
-    }, function(err){ console.log('Notif listener error:',err.message); });
+      });
 }
-
-// Submit a transfer request
 function submitTransfer() {
   var serialRaw = document.getElementById('tfrSerialInput').value.trim();
   var toEmail   = document.getElementById('tfrToEmail').value.trim().toLowerCase();
